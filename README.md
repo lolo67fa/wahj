@@ -10,9 +10,9 @@ Each person adds their own screens to `docs/screenshots/` and a row to the table
 
 | Owner | Screen | Screenshot |
 |---|---|---|
-| Lamis | My Habits | <img src="docs/screenshots/my-habits.png" width="200"> |
-| Lamis | Missed Habit | <img src="docs/screenshots/missed-habit.png" width="200"> |
-| Lamis | Add Habit | <img src="docs/screenshots/add-habit.png" width="200"> |
+| Lamis | My Habits | <img src="docs/screenshots/My%20Habits.png" width="200"> |
+| Lamis | Missed Habit | <img src="docs/screenshots/MissedHabitView.png" width="200"> |
+| Lamis | Add Habit | <img src="docs/screenshots/Add%20habits.png" width="200"> |
 | Ghala | _coming soon_ | |
 | Ghaida | _coming soon_ | |
 | Lujain | _coming soon_ | |
