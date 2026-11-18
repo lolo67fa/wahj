@@ -43,10 +43,10 @@ wahj/
   Shared/       Theme (colors), StarryBackground, BottomTabBar
   Assets.xcassets   Star images and tab bar icons
   MyApp.swift   App entry point (only one in the project)
-  tawhj.xcodeproj
+  tawhj.xcodeproj   Xcode project file (created by Ghala)
 ```
 
-Each person works in their own folder (for example `Ghala/`, `Lujain/`). Files in `Shared/` are used by everyone, so tell the group before changing them.
+Each person works in their own folder (for example `Ghala/`, `Ghaida/`). Files in `Shared/` are used by everyone, so tell the group before changing them.
 
 ## Getting started
 
@@ -66,6 +66,7 @@ Requirements: a Mac with Xcode (_add the version you use_).
 - Commit with a short message that starts with a verb, for example: `Add Missed Habit page`.
 - Run `git push` at the end of each session.
 - There is only one `@main` app file (`MyApp.swift`). Do not add another.
+- New files must be added to the Xcode project (`tawhj.xcodeproj`) as well as the folder. If you only copy a file into the folder, Xcode will not build it.
 
 ## Design
 
@@ -76,8 +77,8 @@ Requirements: a Mac with Xcode (_add the version you use_).
 ## Team
 
 - Ghala ([@lolo67fa](https://github.com/lolo67fa))
-- Ghaida 
-- Lujain
+- Ghaida
+- Lujain ([@lujainayman1602-ux](https://github.com/lujainayman1602-ux))
 - Lamis ([@xtvkyx](https://github.com/xtvkyx))
 - Mays
-- Zaha
+- Zaha ([@zaha7](https://github.com/zaha7))
