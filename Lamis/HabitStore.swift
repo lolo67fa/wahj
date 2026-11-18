@@ -60,6 +60,7 @@ final class HabitStore {
     private let saverKey = "lastStreakSaverDate"
 
     init() {
+        UNUserNotificationCenter.current().delegate = ReminderPresenter.shared
         if UserDefaults.standard.data(forKey: storageKey) == nil {
             // First launch only: start with example habits.
             habits = Self.samples
@@ -307,6 +308,19 @@ final class HabitStore {
               reminderTime: .now, durationDays: 7, dailyGoal: 1, todayCount: 1, completedDays: 3,
               lastLogDate: .now, lastCompletedDate: .now, streakCount: 3)
     ]
+}
+
+// By default iOS hides notifications while the app is open.
+// This makes reminders show as a banner (with sound) even then.
+final class ReminderPresenter: NSObject, UNUserNotificationCenterDelegate {
+    static let shared = ReminderPresenter()
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        [.banner, .sound, .list]
+    }
 }
 
 // Schedules a repeating local notification on each chosen day at the reminder time.

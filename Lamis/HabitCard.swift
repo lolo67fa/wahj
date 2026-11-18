@@ -14,30 +14,30 @@ struct HabitCard: View {
         HStack(spacing: 14) {
             ringButton
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(habit.name)
                     .font(.headline)
                     .foregroundStyle(.white)
                     .strikethrough(habit.isDoneToday, color: Theme.pink)
 
-                HStack(spacing: 10) {
-                    if habit.isFinished {
-                        Text("اكتملت الرحلة")
-                    } else {
+                // Today: streak and today's count (e.g. water 7 of 15).
+                if !habit.isFinished && (habit.streak > 0 || habit.dailyGoal > 1) {
+                    HStack(spacing: 10) {
                         if habit.streak > 0 {
                             Label("\(arabicNumber(habit.streak)) أيام", systemImage: "flame.fill")
                                 .labelStyle(StreakLabelStyle())
                         }
                         if habit.dailyGoal > 1 {
-                            Text("\(arabicNumber(habit.todayCount)) من \(arabicNumber(habit.dailyGoal))")
+                            Text("\(arabicNumber(habit.todayCount)) من \(arabicNumber(habit.dailyGoal)) اليوم")
                         }
                     }
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.7))
                 }
-                .font(.caption)
-                .foregroundStyle(.white.opacity(0.7))
-            }
 
-            Spacer()
+                journeyRow
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             // Favorite star, on the left like the original design.
             Button(action: onToggleFavorite) {
@@ -53,6 +53,36 @@ struct HabitCard: View {
             RoundedRectangle(cornerRadius: 24)
                 .stroke(isDone ? Theme.pink.opacity(0.7) : Theme.border, lineWidth: 1)
         )
+    }
+
+    // The whole journey: a thin bar plus "5 of 14 days" (or "journey complete").
+    private var journeyRow: some View {
+        let progress = Double(habit.completedDays) / Double(max(habit.durationDays, 1))
+
+        return HStack(spacing: 8) {
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.white.opacity(0.12))
+                    Capsule()
+                        .fill(Theme.pink)
+                        .frame(width: geo.size.width * progress)
+                }
+            }
+            .frame(height: 6)
+            .animation(.snappy, value: habit.completedDays)
+
+            Text(habit.isFinished
+                 ? "اكتملت الرحلة"
+                 : "\(arabicNumber(habit.completedDays)) من \(arabicNumber(habit.durationDays)) يوم")
+                .font(.caption2)
+                .foregroundStyle(.white.opacity(0.6))
+                .fixedSize()
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("الرحلة")
+        .accessibilityValue(habit.isFinished
+            ? "اكتملت"
+            : "\(arabicNumber(habit.completedDays)) من \(arabicNumber(habit.durationDays)) يوم")
     }
 
     // Each tap adds one; when the ring is full the icon turns pink.
