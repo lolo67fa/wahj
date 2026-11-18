@@ -37,9 +37,11 @@ Final step: connect all screens with `NavigationStack` and run the app on an iPh
 
 ```
 wahj/
-  Lamis/        My Habits, Missed Habit, Add Habit, HabitCard
+  Lamis/        My Habits, Missed Habit, Add Habit, HabitCard, HabitStore, RootView
+  Lujain/       Home, first star achievement, completed constellation
+  Zaha/         Friends screens (HabitScreens)
   Shared/       Theme (colors), StarryBackground, BottomTabBar
-  Assets.xcassets   Star image and tab bar icons
+  Assets.xcassets   Star images and tab bar icons
   MyApp.swift   App entry point (only one in the project)
   tawhj.xcodeproj
 ```
