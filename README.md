@@ -4,6 +4,32 @@ A habit-tracking iOS app built with SwiftUI. Every habit you complete earns a st
 
 The app is in Arabic (right-to-left) with a dark purple space theme.
 
+## Screenshots
+
+Each person adds their own screens to `docs/screenshots/` and a row to the table below.
+
+| Owner | Screen | Screenshot |
+|---|---|---|
+| Lamis | My Habits | <img src="docs/screenshots/my-habits.png" width="200"> |
+| Lamis | Missed Habit | <img src="docs/screenshots/missed-habit.png" width="200"> |
+| Lamis | Add Habit | <img src="docs/screenshots/add-habit.png" width="200"> |
+| Ghala | _coming soon_ | |
+| Ghaida | _coming soon_ | |
+| Lujain | _coming soon_ | |
+| Mays | _coming soon_ | |
+| Zaha | _coming soon_ | |
+
+## Contents
+
+- [The idea](#the-idea)
+- [Features](#features)
+- [Screens and owners](#screens-and-owners)
+- [Project structure](#project-structure)
+- [Getting started](#getting-started)
+- [How we work together](#how-we-work-together)
+- [Design](#design)
+- [Team](#team)
+
 ## The idea
 
 **Challenge:** Help people who struggle with daily routines stay motivated and complete their daily tasks consistently.
@@ -37,13 +63,16 @@ Final step: connect all screens with `NavigationStack` and run the app on an iPh
 
 ```
 wahj/
-  Lamis/        My Habits, Missed Habit, Add Habit, HabitCard, HabitStore, RootView
-  Lujain/       Home, first star achievement, completed constellation
-  Zaha/         Friends screens (HabitScreens)
-  Shared/       Theme (colors), StarryBackground, BottomTabBar
+  Lamis/            My Habits, Missed Habit, Add Habit, HabitCard
+  Lujain/           Home, first star achievement, completed constellation
+  Zaha/             Friends screens
+  Shared/           Theme (colors), StarryBackground, BottomTabBar
+  docs/
+    screenshots/    PNG screenshots of each screen (used in this README)
   Assets.xcassets   Star images and tab bar icons
-  MyApp.swift   App entry point (only one in the project)
+  MyApp.swift       App entry point (only one in the project)
   tawhj.xcodeproj   Xcode project file (created by Ghala)
+  README.md
 ```
 
 Each person works in their own folder (for example `Ghala/`, `Ghaida/`). Files in `Shared/` are used by everyone, so tell the group before changing them.
@@ -61,16 +90,25 @@ Requirements: a Mac with Xcode (_add the version you use_).
 
 ## How we work together
 
+**Git**
 - Run `git pull` before you start working.
 - Only edit files in your own folder.
 - Commit with a short message that starts with a verb, for example: `Add Missed Habit page`.
 - Run `git push` at the end of each session.
+
+**Xcode**
 - There is only one `@main` app file (`MyApp.swift`). Do not add another.
 - New files must be added to the Xcode project (`tawhj.xcodeproj`) as well as the folder. If you only copy a file into the folder, Xcode will not build it.
 
+**Screenshots**
+- Save them in `docs/screenshots/`, as PNG.
+- Use lowercase names with dashes and no spaces, for example `my-habits.png`.
+- To add yours, copy a row in the Screenshots table and change the owner, screen name and file name.
+- Screenshots are for the README only, so they do not need to be added to the Xcode project.
+
 ## Design
 
-- Figma: [Wahj design](https://www.figma.com/design/ZkLUvp20QB6peAtHBlj6Jm/Wahj---prototypes--Community-?node-id=0-1&t=XxpIeKBbN5DcFph3-1)
+- Figma: [Wahj design](https://www.figma.com/design/mYQ0TEcEO8A8MxJhZ3nzjY/Wahj?node-id=1-1322&t=43R1Los8qkt5NdsL-1)
 - Miro board (research, concept and task planning): _add the link here_
 - Colors live in `Shared/Theme.swift`. In code, use the name (for example `Theme.pink`) so a color change only happens in one file.
 
