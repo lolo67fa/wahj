@@ -7,8 +7,8 @@ struct BottomTabBar: View {
         ("نجمتي", "tab_stars"),
         ("أصدقائي", "tab_friends")
     ]
-    @State private var selected = 1
-
+    @Binding var selected: Int
+    
     var body: some View {
         HStack {
             ForEach(items.indices, id: \.self) { i in
@@ -31,7 +31,4 @@ struct BottomTabBar: View {
         .background(Theme.card, in: Capsule())
         .overlay(Capsule().stroke(Theme.border, lineWidth: 1))
     }
-}
-#Preview {
-    BottomTabBar()
 }

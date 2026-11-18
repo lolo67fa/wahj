@@ -4,6 +4,12 @@ import SwiftUI
 // It reassures them (their star is still alive) and offers two choices:
 // use the monthly "streak saver" or start a brand new streak.
 struct MissedHabitView: View {
+    var habitName = ""
+    var canUseSaver = true
+    var onUseSaver: () -> Void = {}
+    var onRestart: () -> Void = {}
+    var onClose: () -> Void = {}
+
     @Environment(\.dismiss) private var dismiss
     @State private var rotation = 0.0
 
@@ -11,7 +17,10 @@ struct MissedHabitView: View {
         VStack(spacing: 16) {
             HStack {
                 Spacer()
-                Button { dismiss() } label: {
+                Button {
+                    onClose()
+                    dismiss()
+                } label: {
                     Image(systemName: "xmark")
                         .font(.headline)
                         .foregroundStyle(Theme.pink)
@@ -19,6 +28,7 @@ struct MissedHabitView: View {
                         .background(Theme.card, in: Circle())
                         .overlay(Circle().stroke(Theme.pink.opacity(0.6), lineWidth: 1))
                 }
+                .accessibilityLabel("إغلاق")
             }
             Spacer()
 
@@ -41,8 +51,8 @@ struct MissedHabitView: View {
             }
             .frame(width: 340, height: 340)
             .onAppear {
-                withAnimation(.linear(duration: 12).repeatForever(autoreverses: false)) {
-                    rotation = 360
+                withAnimation(.linear(duration: 30).repeatForever(autoreverses: false)) {
+                    rotation = -360
                 }
             }
 
@@ -54,12 +64,25 @@ struct MissedHabitView: View {
                     .font(.body)
                     .foregroundStyle(.white.opacity(0.75))
                     .multilineTextAlignment(.center)
+                if !habitName.isEmpty {
+                    Text(habitName)
+                        .font(.headline)
+                        .foregroundStyle(Theme.pink)
+                }
             }
             .padding(.top, 8)
 
             VStack(spacing: 10) {
-                ActionButton(title: "إستخدم فرصة الشهر", icon: "arrow.counterclockwise", isPrimary: true) { }
-                ActionButton(title: "إبدأ سلسلة جديدة", icon: nil, isPrimary: false) { }
+                ActionButton(title: "إستخدم فرصة الشهر", icon: "arrow.counterclockwise", isPrimary: true) {
+                    onUseSaver()
+                    dismiss()
+                }
+                .disabled(!canUseSaver)
+                .opacity(canUseSaver ? 1 : 0.5)
+                ActionButton(title: "إبدأ سلسلة جديدة", icon: nil, isPrimary: false) {
+                    onRestart()
+                    dismiss()
+                }
             }
             .padding(.top, 16)
 
