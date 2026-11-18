@@ -70,9 +70,18 @@ Requirements: a Mac with Xcode (_add the version you use_).
 
 ## Design
 
-- Figma: _add the link here_
+- Figma: [Wahj design](https://www.figma.com/design/ZkLUvp20QB6peAtHBlj6Jm/Wahj---prototypes--Community-?node-id=0-1&t=XxpIeKBbN5DcFph3-1)
 - Miro board (research, concept and task planning): _add the link here_
-- Colors are defined once in `Shared/Theme.swift`. Use `Theme.pink`, `Theme.card` and so on instead of typing hex codes in a screen.
+- Colors live in `Shared/Theme.swift`. In code, use the name (for example `Theme.pink`) so a color change only happens in one file.
+
+| Name | Hex | Used for |
+|---|---|---|
+| `Theme.bg` | `#2F2240` | Screen background |
+| `Theme.card` | `#3F2B55` | Cards, buttons, tab bar |
+| `Theme.border` | `#5A3F73` | Borders and thin lines |
+| `Theme.pink` | `#E6B4E1` | Main accent: buttons, progress bars, icons |
+| `Theme.cream` | `#FBEFC8` | Completed-habit icon circle |
+| `Theme.tabActive` | `#9B6BC0` | Selected tab |
 
 ## Team
 
