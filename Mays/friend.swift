@@ -2,10 +2,10 @@ import SwiftUI
 
 struct FriendsListView: View {
     // الالوان
-    let background = Color(red: 51/255, green: 32/255, blue: 63/255)
-    let card = Color(red: 75/255, green: 47/255, blue: 92/255)
-    let pink = Color(red: 242/255, green: 179/255, blue: 230/255)
-    let yellow = Color(red: 0.96, green: 0.85, blue: 0.54)
+    let background = Theme.bg
+    let card = Theme.card
+    let pink = Theme.pink
+    let yellow = Theme.starLit
 
     // اسم النجمة جاي من FriendsTab
     @Binding var sharedStar: String
@@ -77,7 +77,7 @@ struct FriendsListView: View {
                 } label: {
                     Text("+ دعوة صديقة للانضمام")
                         .bold()
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.text)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .overlay(
@@ -100,7 +100,7 @@ struct FriendsListView: View {
                 } label: {
                     Text("ابدأ عادة مع صديق")
                         .bold()
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Theme.onAccent)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(pink)
@@ -108,7 +108,7 @@ struct FriendsListView: View {
                 }
             }
             .padding()
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.text)
         }
         // الصفحة من اليمين لليسار
         .environment(\.layoutDirection, .rightToLeft)
@@ -134,28 +134,28 @@ struct ConstellationView: View {
             Path { path in
                 path.addLines(points)
             }
-            .stroke(Color.white.opacity(0.6),
+            .stroke(Theme.text.opacity(0.6),
                     style: StrokeStyle(lineWidth: 2, dash: [5]))
 
             // خط ابيض بين النجوم اللي انضاءت بس
             Path { path in
                 path.addLines(Array(points.prefix(done)))
             }
-            .stroke(Color.white, lineWidth: 3)
+            .stroke(Theme.text, lineWidth: 3)
 
             ForEach(0..<points.count, id: \.self) { i in
                 if i < done {
                     // نجمة مضيئة
                     Image(systemName: "sparkle")
-                        .foregroundStyle(Color(red: 1.0, green: 0.85, blue: 0.30))
+                        .foregroundStyle(Theme.starLit)
                         .padding(8)
-                        .background(Color(red: 1.0, green: 0.85, blue: 0.30).opacity(0.25))
+                        .background(Theme.starLit.opacity(0.25))
                         .clipShape(Circle())
                         .position(points[i])
                 } else {
                     // نجمة باقي ما انضاءت
                     Circle()
-                        .fill(.white)
+                        .fill(Theme.text)
                         .frame(width: 8, height: 8)
                         .position(points[i])
                 }

@@ -6,8 +6,8 @@ struct FriendStarInfo {
 }
 
 struct FriendChooseStarView: View {
-    let background = Color(red: 51/255, green: 32/255, blue: 63/255)
-    let pink = Color(red: 242/255, green: 179/255, blue: 230/255)
+    let background = Theme.bg
+    let pink = Theme.pink
 
     @AppStorage("completedStars") var completedStars = 5
 
@@ -97,7 +97,7 @@ struct FriendChooseStarView: View {
                 } label: {
                     Text("التالي: إرسال الدعوة")
                         .bold()
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Theme.onAccent)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(pink)
@@ -105,7 +105,7 @@ struct FriendChooseStarView: View {
                 }
             }
             .padding()
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.text)
         }
         .environment(\.layoutDirection, .rightToLeft)
         .onAppear {
@@ -132,8 +132,8 @@ struct FriendStarCard: View {
     let points: [CGPoint]
     let isSelected: Bool
 
-    let card = Color(red: 75/255, green: 47/255, blue: 92/255)
-    let pink = Color(red: 242/255, green: 179/255, blue: 230/255)
+    let card = Theme.card
+    let pink = Theme.pink
 
     var body: some View {
         HStack {
@@ -161,7 +161,7 @@ struct FriendStarCard: View {
 
 struct FriendStarDrawing: View {
     let points: [CGPoint]
-    let yellow = Color(red: 1.0, green: 0.85, blue: 0.30)
+    let yellow = Theme.starLit
 
     let width: CGFloat = 120
     let height: CGFloat = 70
@@ -190,7 +190,7 @@ struct FriendStarDrawing: View {
             Path { path in
                 path.addLines(fittedPoints)
             }
-            .stroke(Color.white.opacity(0.35),
+            .stroke(Theme.text.opacity(0.35),
                     style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
 
             ForEach(0..<fittedPoints.count, id: \.self) { i in

@@ -10,8 +10,8 @@ struct StarCompletionPage: View {
     @State private var twinkle = false
     @State private var orbitRotation = 0.0
 
-    private let titleColor = Color(red: 1.0, green: 0.90, blue: 0.62)
-    private let darkPurple = Color(red: 0.19, green: 0.13, blue: 0.25)
+    private let titleColor = Theme.starLit
+    private let darkPurple = Theme.onAccent
 
     var body: some View {
         VStack(spacing: 0) {
@@ -185,15 +185,15 @@ struct OrbitRings: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                .stroke(Theme.text.opacity(0.12), lineWidth: 1)
 
             Ellipse()
-                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                .stroke(Theme.text.opacity(0.18), lineWidth: 1)
                 .frame(width: 340, height: 130)
                 .rotationEffect(.degrees(-12 + rotation))
 
             Circle()
-                .fill(Color.white.opacity(0.35))
+                .fill(Theme.text.opacity(0.35))
                 .frame(width: 6, height: 6)
                 .offset(x: -160)
                 .rotationEffect(.degrees(rotation))
