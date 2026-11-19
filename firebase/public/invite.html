@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>دعوة وَهج</title>
+<style>
+  :root {
+    --background: #33203F; --surface: #4B2F5C; --field: #432A52; --elevated: #6E3F8A;
+    --accent: #F2B3E6; --on-accent: #33203F; --text: #FFF4FD; --secondary: #E3C8EA; --gold: #FFEBA6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--background); color: var(--text);
+    font-family: -apple-system, "SF Arabic", "Geeza Pro", system-ui, sans-serif;
+    display: flex; justify-content: center; padding: 32px 16px;
+    background-image:
+      radial-gradient(circle at 85% 8%, transparent 150px, rgba(255,255,255,.07) 151px, transparent 153px),
+      radial-gradient(circle at 10% 95%, transparent 160px, rgba(255,255,255,.07) 161px, transparent 163px);
+  }
+  main { width: 100%; max-width: 420px; text-align: center; }
+  .star { font-size: 64px; color: var(--gold); text-shadow: 0 0 24px rgba(255,235,166,.6); }
+  h1 { font-size: 26px; margin: 12px 0 8px; }
+  p { color: var(--secondary); line-height: 1.7; margin: 8px 0; }
+  .card { background: var(--surface); border-radius: 24px; padding: 20px; margin: 20px 0; }
+  .code {
+    direction: ltr; font: 600 20px ui-monospace, Menlo, monospace; letter-spacing: 1px;
+    background: var(--field); border-radius: 16px; padding: 14px; word-break: break-all;
+  }
+  .button {
+    display: block; width: 100%; border: 0; border-radius: 999px; padding: 16px;
+    font: 700 17px inherit; margin-top: 12px; cursor: pointer; text-decoration: none;
+  }
+  .primary { background: var(--accent); color: var(--on-accent); }
+  .secondary { background: var(--elevated); color: var(--text); }
+  .note { font-size: 13px; }
+  .error { color: #FF8A9A; }
+</style>
+</head>
+<body>
+<main>
+  <div class="star" aria-hidden="true">✦</div>
+  <h1>وصلتك دعوة لرحلة في وَهج</h1>
+  <p>صديقتك تدعوك تبدؤون عادة سوا وتضوّون نجمة مشتركة.</p>
+
+  <div class="card" id="ok" hidden>
+    <a class="button primary" id="open">افتحي الدعوة في تطبيق وَهج</a>
+    <p class="note">إذا ما انفتح التطبيق، افتحيه وروحي إلى «أصدقائي» ← «عندك رمز دعوة؟» والصقي هذا الرمز:</p>
+    <div class="code" id="code"></div>
+    <button class="button secondary" id="copy" type="button">نسخ رمز الدعوة</button>
+  </div>
+
+  <div class="card" id="bad" hidden>
+    <p class="error">رابط الدعوة غير صحيح. اطلبي من صديقتك ترسل الدعوة مرة ثانية.</p>
+  </div>
+
+  <p class="note">تحتاجين تطبيق وَهج على جوالك. التطبيق غير منشور في App Store حاليًا؛
+    اطلبي من صديقتك نسخة التطبيق التجريبية.</p>
+  <p class="note">الدعوة صالحة ٧ أيام، ويمكن لصاحبتها إلغاؤها.</p>
+</main>
+<script>
+  (function () {
+    // The page only reads the code from its own address; it never contacts a server.
+    var raw = decodeURIComponent(location.pathname.replace(/^\/i\//, "").split("/")[0] || "");
+    var code = raw.toUpperCase().replace(/[\s-]/g, "");
+    var valid = /^[0-9A-HJKMNP-TV-Z]{20}$/.test(code);
+    if (!valid) { document.getElementById("bad").hidden = false; return; }
+    var pretty = code.match(/.{1,5}/g).join("-");
+    document.getElementById("ok").hidden = false;
+    document.getElementById("code").textContent = pretty;
+    document.getElementById("open").href = "wahj://invite/" + code;
+    document.getElementById("copy").addEventListener("click", function () {
+      var done = function () { document.getElementById("copy").textContent = "تم النسخ ✓"; };
+      if (navigator.clipboard) { navigator.clipboard.writeText(pretty).then(done, done); } else { done(); }
+    });
+  })();
+</script>
+</body>
+</html>

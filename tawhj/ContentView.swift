@@ -10,6 +10,7 @@ struct ContentView: View {
     // Firebase UID of the signed-in account; each account has its own data.
     @State private var accountID: String?
     @Environment(HabitStore.self) private var habitStore
+    @Environment(JourneyService.self) private var journeyService
 
     private let secondaryText = AppTheme.textSecondary
 
@@ -40,6 +41,7 @@ struct ContentView: View {
                 _, user in
 
                 habitStore.activate(account: user?.uid)
+                journeyService.activate(account: user?.uid, store: habitStore)
                 accountID = user?.uid
                 signedIn = user != nil
                 checkingSession = false

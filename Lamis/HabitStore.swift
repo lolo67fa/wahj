@@ -33,6 +33,8 @@ struct Habit: Identifiable, Codable, Hashable {
     var baselineCompletedDays: Int?
     // Example habits for previews only, never part of a real account.
     var isDemo: Bool?
+    // The friends journey (Firestore id) this habit is shared in, if any.
+    var sharedJourneyID: String?
 
     var isFavorite: Bool { favorite ?? false }
     var streak: Int { streakCount ?? 0 }
@@ -77,6 +79,13 @@ final class HabitStore {
     private(set) var appStreak = 0
     // The real current day (not the day selected in the UI).
     private(set) var today = Calendar.current.startOfDay(for: .now)
+
+    // Told when today's completion of a shared habit is added or removed
+    // (habit after recompute, day key, done). Set by JourneyService.
+    @ObservationIgnored var completionObserver: ((Habit, String, Bool) -> Void)?
+
+    // The name chosen during onboarding, for this account.
+    var displayName: String { defaults.string(forKey: "displayName") ?? "" }
 
     // The habit to show on the "missed habit" screen, if any.
     var missedHabit: Habit?
@@ -157,6 +166,36 @@ final class HabitStore {
         for habit in new {
             Task { await ReminderScheduler.schedule(habit) }
         }
+    }
+
+    // MARK: - Shared journeys
+
+    private func notifyShared(at index: Int, done: Bool) {
+        guard habits.indices.contains(index), habits[index].sharedJourneyID != nil else { return }
+        completionObserver?(habits[index], DayKey.key(for: .now), done)
+    }
+
+    func habit(forJourney journeyID: String) -> Habit? {
+        habits.first { $0.sharedJourneyID == journeyID }
+    }
+
+    // Links (or unlinks) one of the user's habits to a friends journey. Only
+    // completions made after linking are shared; the personal log is unchanged.
+    func linkHabit(_ id: UUID, toJourney journeyID: String?) {
+        guard let index = habits.firstIndex(where: { $0.id == id }) else { return }
+        habits[index].sharedJourneyID = journeyID
+    }
+
+    // After accepting an invite: the shared habit joins the user's own habits.
+    func addSharedHabit(title: String, icon: String, days: Set<Int>, journeyID: String) {
+        guard canPersist, habit(forJourney: journeyID) == nil else { return }
+        var habit = Habit(
+            name: title, icon: icon, days: days.isEmpty ? Set(0...6) : days,
+            reminderEnabled: false, reminderTime: .now, durationDays: 21, dailyGoal: 1
+        )
+        habit.sharedJourneyID = journeyID
+        habits.append(habit)
+        recompute()
     }
 
     // MARK: - Reading progress
@@ -267,6 +306,7 @@ final class HabitStore {
         updated.journeyStartDate = old.journeyStartDate
         updated.baselineCompletedDays = old.baselineCompletedDays
         updated.isDemo = old.isDemo
+        updated.sharedJourneyID = old.sharedJourneyID
         updated.createdAt = old.createdAt
         if habit.days != old.days && !hadMissed {
             updated.lastResolvedDate = Calendar.current.date(byAdding: .day, value: -1, to: .now)
@@ -283,6 +323,7 @@ final class HabitStore {
             addCompletion(at: index)
         }
         recompute()
+        if wasDone != isDone { notifyShared(at: index, done: isDone) }
 
         // A shorter duration can finish the journey right away.
         if habits[index].isFinished && !old.isFinished {
@@ -351,6 +392,7 @@ final class HabitStore {
         let wasFinished = habits[index].isFinished
         addCompletion(at: index)
         recompute()
+        notifyShared(at: index, done: true)
 
         if habits[index].isFinished && !wasFinished {
             justFinished = habits[index]
@@ -362,6 +404,7 @@ final class HabitStore {
         let wasFinished = habits[index].isFinished
         removeCompletion(at: index)
         recompute()
+        notifyShared(at: index, done: false)
 
         if wasFinished && !habits[index].isFinished {
             let habit = habits[index]
