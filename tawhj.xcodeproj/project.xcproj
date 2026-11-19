@@ -25,6 +25,7 @@
     { "kind": "folder", "path": "Lamis", "target-membership": [ "tawhj" ] },
     { "kind": "folder", "path": "Lujain", "target-membership": [ "tawhj" ] },
     { "kind": "folder", "path": "Zaha", "target-membership": [ "tawhj" ] },
+    { "kind": "folder", "path": "Mays", "target-membership": [ "tawhj" ] },
     { "kind": "group", "name": "Frameworks" },
     {
       "kind": "group",
