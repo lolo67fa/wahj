@@ -6,40 +6,16 @@ enum StarProgress {
         "الجبار", "العقرب", "التنين"
     ]
 
-    static let pointsPerStar = 100
+    static let pointsPerStar = HabitProgress.pointsPerConstellation
     // Completing a habit for the day gives 5 points (see HabitIntroView).
-    static let pointsPerHabit = 5
-
-    // Takes points back when today's completion is undone.
-    static func removePoints(_ amount: Int) {
-        guard amount > 0 else { return }
-
-        let defaults = UserDefaults.standard
-        let current = max(defaults.integer(forKey: "starTotalPoints"), 0)
-        defaults.set(max(current - amount, 0), forKey: "starTotalPoints")
-    }
-
-    static func awardPoints(_ amount: Int) {
-        guard amount > 0 else { return }
-
-        let defaults = UserDefaults.standard
-        let current = min(
-            max(defaults.integer(forKey: "starTotalPoints"), 0),
-            600
-        )
-
-        defaults.set(
-            current + min(amount, 600 - current),
-            forKey: "starTotalPoints"
-        )
-    }
+    // النقاط نفسها تُحسب من سجل الإنجازات في HabitStore (Shared/HabitProgress.swift).
+    static let pointsPerHabit = HabitProgress.pointsPerCompletion
 }
 
 struct StarSelectionView: View {
     @Environment(\.dismiss) private var dismiss
-
-    @AppStorage("starTotalPoints")
-    private var totalPoints = 0
+    // نقاط كل مجموعة وفتحها من مصدر البيانات المشترك.
+    @Environment(HabitStore.self) private var store
 
     @AppStorage("selectedStarIndex")
     private var selectedStar = -1
@@ -58,13 +34,9 @@ struct StarSelectionView: View {
         blue: 230 / 255
     )
 
-    private var unlockedIndex: Int {
-        min(max(totalPoints, 0) / 100, 5)
-    }
-
     private var validSelection: Bool {
         (0..<6).contains(selectedStar)
-            && selectedStar <= unlockedIndex
+            && store.isConstellationUnlocked(selectedStar)
     }
 
     private var featuredIndex: Int {
@@ -179,16 +151,12 @@ struct StarSelectionView: View {
         .frame(minHeight: 44)
     }
 
-    private func points(for index: Int) -> Int {
-        min(max(totalPoints - index * 100, 0), 100)
-    }
-
     private func card(
         _ index: Int,
         featured: Bool
     ) -> some View {
-        let unlocked = index <= unlockedIndex
-        let progress = points(for: index)
+        let unlocked = store.isConstellationUnlocked(index)
+        let progress = store.constellationPoints(index)
         let selected = selectedStar == index
 
         return Button {
@@ -277,7 +245,7 @@ struct StarSelectionView: View {
     }
 }
 
-private struct ConstellationCardBackground: View {
+struct ConstellationCardBackground: View {
     let seed: Int
 
     var body: some View {
@@ -346,10 +314,16 @@ private struct ConstellationCardBackground: View {
     }
 }
 
-private struct ConstellationDrawing: View {
+// رسم المجموعة النجمية. تستخدمه صفحة «اختار نجمتك» والرئيسية.
+struct ConstellationDrawing: View {
     let index: Int
     let progress: Double
     let locked: Bool
+    // في الرئيسية يتقدم الضوء على مسار المجموعة: نجمة ثم خط ثم النجمة التالية،
+    // ويضيء جزء من الخط التالي مع كل ٥ نقاط.
+    var lightsAlongPath = false
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let gold = Color(
         red: 1,
@@ -463,6 +437,9 @@ private struct ConstellationDrawing: View {
             )
 
             ZStack {
+                if lightsAlongPath {
+                    pathEdges(positions: positions)
+                } else {
                 ForEach(edges.indices, id: \.self) { i in
                     let edge = edges[i]
                     let lit = !locked
@@ -486,9 +463,12 @@ private struct ConstellationDrawing: View {
                         radius: 5
                     )
                 }
+                }
 
                 ForEach(positions.indices, id: \.self) { i in
-                    let lit = !locked && i < litCount
+                    let lit = lightsAlongPath
+                        ? isStarLitAlongPath(i)
+                        : !locked && i < litCount
 
                     ZStack {
                         if lit {
@@ -533,8 +513,49 @@ private struct ConstellationDrawing: View {
         }
         // تثبيت اتجاه الرسومات حتى لا تنعكس مع العربية.
         .environment(\.layoutDirection, .leftToRight)
-        .animation(.easeInOut(duration: 0.8), value: progress)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.8), value: progress)
         .accessibilityHidden(true)
+    }
+
+    // MARK: - Lighting along the path
+
+    // How much of edge i is lit (0...1). The whole path is split evenly between the edges.
+    private func edgeFill(_ i: Int) -> Double {
+        guard !locked else { return 0 }
+        let along = min(max(progress, 0), 1) * Double(edges.count)
+        return min(max(along - Double(i), 0), 1)
+    }
+
+    // A star lights up when the light reaches it.
+    private func isStarLitAlongPath(_ star: Int) -> Bool {
+        guard !locked, progress > 0 else { return false }
+        if progress >= 1 { return true }
+        return edges.indices.contains { i in
+            (edges[i].0 == star && edgeFill(i) > 0) || (edges[i].1 == star && edgeFill(i) >= 1)
+        }
+    }
+
+    // The remaining path stays faint; the lit part is gold, including part of the next line.
+    private func pathEdges(positions: [CGPoint]) -> some View {
+        ForEach(edges.indices, id: \.self) { i in
+            let edge = edges[i]
+            let line = Path { path in
+                path.move(to: positions[edge.0])
+                path.addLine(to: positions[edge.1])
+            }
+
+            ZStack {
+                line.stroke(
+                    Color.white.opacity(0.28),
+                    style: StrokeStyle(lineWidth: 1.2, lineCap: .round, dash: [2, 4])
+                )
+
+                line.trim(from: 0, to: edgeFill(i))
+                    .stroke(gold, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .shadow(color: gold.opacity(0.8), radius: 5)
+                    .opacity(edgeFill(i) > 0 ? 1 : 0)
+            }
+        }
     }
 }
 

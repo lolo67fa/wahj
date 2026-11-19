@@ -6,10 +6,14 @@ struct DashboardHabit: Identifiable, Equatable {
     var title: String
     var points: Int = 5
     var isDone: Bool = false
+    // Only today's completion can change; past days are read-only, future days can't be done.
+    var isEditable: Bool = true
+    var isFuture: Bool = false
 }
 
 struct HabitsSection: View {
     let habits: [DashboardHabit]
+    var note: String? = nil
     var onToggle: (DashboardHabit) -> Void = { _ in }
 
     var body: some View {
@@ -18,6 +22,13 @@ struct HabitsSection: View {
                 .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 4)
+
+            if let note {
+                Text(note)
+                    .font(.footnote)
+                    .foregroundStyle(.white.opacity(0.6))
+                    .padding(.horizontal, 4)
+            }
 
             ForEach(habits) { habit in
                 DashboardHabitRow(habit: habit) {
@@ -42,7 +53,9 @@ struct DashboardHabitRow: View {
                 action()
             }
         } label: {
-            HStack {
+            HStack(spacing: 12) {
+                HabitCheckbox(isOn: habit.isDone, isEnabled: habit.isEditable)
+
                 Text(habit.title)
                     .font(.system(size: 16, weight: .medium))
                     .foregroundStyle(.white.opacity(0.9))
@@ -69,6 +82,37 @@ struct DashboardHabitRow: View {
             }
         }
         .buttonStyle(.plain)
+        .disabled(!habit.isEditable)
+        .opacity(habit.isFuture ? 0.55 : 1)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(habit.title)
+        .accessibilityValue(habit.isDone ? "منجزة، +\(habit.points) نقاط" : "غير منجزة")
+        .accessibilityAddTraits(.isToggle)
+        .accessibilityHint(habit.isEditable ? "اضغط لتسجيل إنجاز اليوم أو إلغائه" : "يمكن تعديل إنجاز اليوم فقط")
+    }
+}
+
+// مربع الإنجاز: يتعبّى بالوردي مع علامة صح عند إنجاز العادة.
+struct HabitCheckbox: View {
+    let isOn: Bool
+    var isEnabled = true
+
+    private let accent = Color(red: 0.91, green: 0.70, blue: 0.90)
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(isOn ? accent : Color.clear)
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(accent.opacity(isEnabled || isOn ? 1 : 0.45), lineWidth: 2)
+            if isOn {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Theme.bg)
+            }
+        }
+        .frame(width: 28, height: 28)
+        .frame(minWidth: 44, minHeight: 44)   // comfortable tap area
     }
 }
 

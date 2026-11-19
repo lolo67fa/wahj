@@ -7,9 +7,9 @@ struct ContentView: View {
     @State private var checkingSession = true
     @State private var authListener: AuthStateDidChangeListenerHandle?
 
-    // تتفعّل بعد إضافة أول عادة من صفحات البداية.
-    @AppStorage("hasCompletedOnboarding")
-    private var hasCompletedOnboarding = false
+    // Firebase UID of the signed-in account; each account has its own data.
+    @State private var accountID: String?
+    @Environment(HabitStore.self) private var habitStore
 
     private let secondaryText = Color(
         red: 227.0 / 255,
@@ -23,12 +23,12 @@ struct ContentView: View {
                 SpaceBackground()
                 ProgressView()
                     .tint(.white)
-            } else if signedIn {
-                if hasCompletedOnboarding {
-                    RootView()
-                } else {
-                    OnboardingView()
-                }
+            } else if signedIn, let accountID {
+                // كل الصفحات بعد الدخول تقرأ إعداداتها (الاسم، النجمة المختارة...)
+                // من بيانات هذا الحساب فقط.
+                SignedInRootView(accountID: accountID)
+                    .defaultAppStorage(HabitStore.accountDefaults(for: accountID))
+                    .id(accountID)
             } else {
                 welcomeScreen
             }
@@ -43,6 +43,8 @@ struct ContentView: View {
             authListener = Auth.auth().addStateDidChangeListener {
                 _, user in
 
+                habitStore.activate(account: user?.uid)
+                accountID = user?.uid
                 signedIn = user != nil
                 checkingSession = false
 
