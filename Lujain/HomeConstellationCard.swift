@@ -51,10 +51,12 @@ struct HomeConstellationCard: View {
                 Text(footnote)
                     .font(.system(size: 12))
                     .foregroundStyle(secondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(16)
         }
-        .frame(height: 260)
+        .frame(minHeight: 260)
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .overlay {
             RoundedRectangle(cornerRadius: 22)
@@ -71,7 +73,7 @@ struct HomeConstellationCard: View {
 
     private var footnote: String {
         if isComplete, let nextName, nextUnlocked {
-            return "اكتملت \(name)! انفتحت «\(nextName)» وتقدر تختارها من صفحة نجمتي"
+            return "اكتملت! انفتحت «\(nextName)»، اختارها من نجمتي"
         }
         if isComplete {
             return "اكتملت \(name)!"
