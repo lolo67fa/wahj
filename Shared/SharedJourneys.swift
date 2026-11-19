@@ -18,6 +18,19 @@
 import Foundation
 import FirebaseFirestore
 import Security
+import os
+
+// Step-by-step log for the friends feature: ids, counts and error codes only.
+let journeyLog = Logger(subsystem: "com.ghalaalshreef.wahj", category: "journeys")
+
+// Logs a friends-feature step (ids, counts, error codes; never names or emails).
+// Debug builds also print it, so it shows in the device console.
+func journeyTrace(_ message: String) {
+    journeyLog.notice("\(message, privacy: .public)")
+    #if DEBUG
+    print("[Journeys] \(message)")
+    #endif
+}
 
 // MARK: - Invite codes
 
@@ -208,8 +221,13 @@ final class JourneyService {
         indexListener = db.collection("users").document(uid).collection("journeys")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self else { return }
-                if let error { self.syncError = error.localizedDescription; return }
+                if let error {
+                    journeyTrace("journey index listener failed: \((error as NSError).domain) \((error as NSError).code) \(error.localizedDescription)")
+                    self.syncError = error.localizedDescription
+                    return
+                }
                 let ids = Set(snapshot?.documents.map(\.documentID) ?? [])
+                journeyTrace("journey index: \(ids.count) journeys")
                 self.updateJourneyListeners(to: ids)
             }
     }
@@ -303,7 +321,14 @@ final class JourneyService {
         ], forDocument: journeyRef.collection("members").document(uid))
         batch.setData(["joinedAt": FieldValue.serverTimestamp()],
                       forDocument: db.collection("users").document(uid).collection("journeys").document(journeyRef.documentID))
-        try await batch.commit()
+        journeyTrace("createJourney: committing \(journeyRef.documentID)")
+        do {
+            try await batch.commit()
+        } catch {
+            journeyTrace("createJourney failed: \((error as NSError).domain) \((error as NSError).code) \(error.localizedDescription)")
+            throw error
+        }
+        journeyTrace("createJourney: done")
 
         store?.linkHabit(habit.id, toJourney: journeyRef.documentID)
         return journeyRef.documentID
@@ -323,6 +348,8 @@ final class JourneyService {
 
         let code = InviteCode.make()
         let expires = Date.now.addingTimeInterval(InviteCode.lifetime)
+        journeyTrace("createInvite: writing invite for journey \(journeyId)")
+        defer { journeyTrace("createInvite: finished") }
         try await db.collection("invites").document(code).setData([
             "journeyId": journeyId,
             "inviterUid": uid,
@@ -362,6 +389,7 @@ final class JourneyService {
 
     func lookup(_ code: String) async throws -> InviteLookup {
         guard let uid = accountID else { throw JourneyError.notSignedIn }
+        journeyTrace("lookup invite")
         let snapshot = try await db.collection("invites").document(code).getDocument()
         guard let invite = Self.invite(from: snapshot) else { return .invalid }
         if invite.revoked { return .revoked }
@@ -377,6 +405,7 @@ final class JourneyService {
     // opening their own invite never adds a second membership.
     func accept(_ invite: InviteSummary) async throws -> InviteAcceptResult {
         guard let uid = accountID else { throw JourneyError.notSignedIn }
+        journeyTrace("accept: starting transaction")
         let joined = try await Self.acceptTransaction(
             db: db, code: invite.code, uid: uid, displayName: displayName
         )
@@ -470,6 +499,7 @@ final class JourneyService {
                 }
                 try await syncStreak(of: habit, journeyRef: journeyRef, uid: uid)
             } catch {
+                journeyTrace("syncCompletion failed: \((error as NSError).code) \(error.localizedDescription)")
                 syncError = error.localizedDescription
             }
         }

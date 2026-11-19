@@ -1,4 +1,5 @@
 import SwiftUI
+import os
 
 // اختيار النجمة المشتركة ثم إرسال الدعوة.
 // المجموعات بنفس الأسماء والرسومات الموجودة في «اختار نجمتك» (StarProgress وConstellationDrawing).
@@ -97,6 +98,7 @@ struct FriendChooseStarView: View {
     }
 
     private func sendInvite() {
+        journeyTrace("send invite tapped (habit found: \(habit != nil))")
         guard let habit else { return }
         isWorking = true
         Task {
@@ -112,6 +114,7 @@ struct FriendChooseStarView: View {
                 journeyID = id
                 invite = try await service.createInvite(for: id)
             } catch {
+                journeyTrace("send invite failed: \(error.localizedDescription)")
                 errorMessage = error.localizedDescription
             }
         }
