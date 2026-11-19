@@ -27,7 +27,7 @@ Miss a day and your star waits for you instead of going out.
   </tr>
   <tr>
     <td align="center"><img src="docs/screenshots/mays-friends-list.png" width="200"><br><sub><b>Friends</b><br>Mays</sub></td>
-    <td align="center"><img src="docs/screenshots/mays-choose-constellation.png" width="200"><br><sub><b>Choose a Constellation</b><br>Mays</sub></td>
+    <td align="center"><img src="docs/screenshots/mays-choose-constellation.png" width="200"><br><sub><b>Choose a Star</b><br>Mays</sub></td>
     <td align="center"><img src="docs/screenshots/zaha-friends.png" width="200"><br><sub><b>Friends Home</b><br>Zaha</sub></td>
     <td align="center"><img src="docs/screenshots/zaha-start-together.png" width="200"><br><sub><b>Start a Habit Together</b><br>Zaha</sub></td>
   </tr>
