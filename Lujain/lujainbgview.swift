@@ -129,6 +129,10 @@ struct HomeView: View {
                 dateText: day.dateText,
                 streakDays: day.streakDays
             )
+            // قائمة الحساب (تسجيل الخروج) في الزاوية العلوية المقابلة للتحية
+            .overlay(alignment: .topLeading) {
+                AccountMenuButton()
+            }
 
             ScrollView {
                 VStack(alignment: .trailing, spacing: 20) {
