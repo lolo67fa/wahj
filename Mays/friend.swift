@@ -2,9 +2,9 @@ import SwiftUI
 
 struct FriendsListView: View {
     // الالوان
-    let background = Color(red: 51/255, green: 32/255, blue: 63/255)
-    let card = Color(red: 75/255, green: 47/255, blue: 92/255)
-    let pink = Color(red: 242/255, green: 179/255, blue: 230/255)
+    let background = AppTheme.background
+    let card = AppTheme.surface
+    let pink = AppTheme.accent
     let yellow = Color(red: 0.96, green: 0.85, blue: 0.54)
 
     // اسم النجمة جاي من FriendsTab
@@ -77,7 +77,7 @@ struct FriendsListView: View {
                 } label: {
                     Text("+ دعوة صديقة للانضمام")
                         .bold()
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppTheme.text)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .overlay(
@@ -100,7 +100,7 @@ struct FriendsListView: View {
                 } label: {
                     Text("ابدأ عادة مع صديق")
                         .bold()
-                        .foregroundStyle(.black)
+                        .foregroundStyle(AppTheme.onAccent)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(pink)
@@ -108,7 +108,7 @@ struct FriendsListView: View {
                 }
             }
             .padding()
-            .foregroundStyle(.white)
+            .foregroundStyle(AppTheme.text)
         }
         // الصفحة من اليمين لليسار
         .environment(\.layoutDirection, .rightToLeft)

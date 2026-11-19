@@ -11,7 +11,7 @@ struct StarCompletionPage: View {
     @State private var orbitRotation = 0.0
 
     private let titleColor = Color(red: 1.0, green: 0.90, blue: 0.62)
-    private let darkPurple = Color(red: 0.19, green: 0.13, blue: 0.25)
+    private let darkPurple = AppTheme.onAccent
 
     var body: some View {
         VStack(spacing: 0) {

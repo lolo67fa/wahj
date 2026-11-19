@@ -1,12 +1,13 @@
 import SwiftUI
 
+// The team's color names, now taken from the one palette in AppTheme.
 enum Theme {
-    static let bg        = Color(hex: "2F2240")
-    static let card      = Color(hex: "3F2B55")
-    static let border    = Color(hex: "5A3F73")
-    static let pink      = Color(hex: "E6B4E1")
-    static let cream     = Color(hex: "FBEFC8")
-    static let tabActive = Color(hex: "9B6BC0")
+    static let bg        = AppTheme.background
+    static let card      = AppTheme.surface
+    static let border    = AppTheme.border
+    static let pink      = AppTheme.accent
+    static let cream     = AppTheme.cream
+    static let tabActive = AppTheme.elevated
 }
 
 extension Color {

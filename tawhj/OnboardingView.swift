@@ -8,27 +8,13 @@
 import SwiftUI
 
 private enum IntroColors {
-    static let text = Color(
-        red: 1, green: 244.0 / 255, blue: 253.0 / 255
-    )
-    static let secondary = Color(
-        red: 227.0 / 255, green: 200.0 / 255, blue: 234.0 / 255
-    )
-    static let pink = Color(
-        red: 242.0 / 255, green: 179.0 / 255, blue: 230.0 / 255
-    )
-    static let card = Color(
-        red: 67.0 / 255, green: 42.0 / 255, blue: 82.0 / 255
-    )
-    static let purple = Color(
-        red: 110.0 / 255, green: 63.0 / 255, blue: 138.0 / 255
-    )
-    static let darkCard = Color(
-        red: 75.0 / 255, green: 47.0 / 255, blue: 92.0 / 255
-    )
-    static let background = Color(
-        red: 51.0 / 255, green: 32.0 / 255, blue: 63.0 / 255
-    )
+    static let text = AppTheme.text
+    static let secondary = AppTheme.textSecondary
+    static let pink = AppTheme.accent
+    static let card = AppTheme.field
+    static let purple = AppTheme.elevated
+    static let darkCard = AppTheme.surface
+    static let background = AppTheme.background
 }
 
 private enum IntroAppearance: String, CaseIterable, Identifiable {
@@ -169,7 +155,7 @@ struct OnboardingView: View {
                     if appearance == option.rawValue {
                         Text("✓")
                             .font(.caption.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AppTheme.text)
                             .frame(width: 22, height: 22)
                             .background(
                                 IntroColors.pink,
@@ -295,9 +281,7 @@ struct OnboardingView: View {
                     .frame(height: 56)
                     .background(IntroColors.pink, in: Capsule())
                     .shadow(
-                        color: Color(
-                            red: 0.35, green: 0.07, blue: 0.35
-                        ),
+                        color: AppTheme.accentShadow,
                         radius: 0,
                         y: 5
                     )

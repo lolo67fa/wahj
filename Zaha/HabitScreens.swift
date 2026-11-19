@@ -3,20 +3,17 @@ import SwiftUI
 
 // MARK: - Theme
 
+// Zaha's color names, now taken from the one palette in AppTheme.
 enum FriendsTheme {
-    static let background = color(51, 32, 63)
-    static let card = color(75, 47, 92)
-    static let cardSoft = color(70, 51, 82)
-    static let hero = color(110, 63, 138)
-    static let pink = color(242, 179, 230)
-    static let purple = color(164, 110, 194)
-    static let yellow = color(255, 230, 146)
-    static let text = color(255, 241, 253)
-    static let subtle = color(231, 203, 231)
-
-    private static func color(_ red: Double, _ green: Double, _ blue: Double) -> Color {
-        Color(.sRGB, red: red / 255, green: green / 255, blue: blue / 255)
-    }
+    static let background = AppTheme.background
+    static let card = AppTheme.surface
+    static let cardSoft = AppTheme.field
+    static let hero = AppTheme.elevated
+    static let pink = AppTheme.accent
+    static let purple = AppTheme.elevated
+    static let yellow = Color(.sRGB, red: 255 / 255, green: 230 / 255, blue: 146 / 255)   // star sparkles (gold)
+    static let text = AppTheme.text
+    static let subtle = AppTheme.textSecondary
 }
 
 struct AppBackground: View {
@@ -253,7 +250,7 @@ struct AppTabBar: View {
                         .foregroundStyle(tab == selected ? FriendsTheme.pink : FriendsTheme.text)
                     Text(tab.title).font(.system(size: 11, weight: .medium))
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(AppTheme.text)
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
                 .background(tab == selected ? FriendsTheme.purple : Color.clear,
@@ -310,11 +307,11 @@ struct StartHabitTogetherScreen: View {
                         }
                         .accessibilityLabel("رجوع")
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppTheme.text)
                     .padding(.top, 12)
                     Text("وش العادة اللي تبغون\nتبدؤونها سوا؟")
                         .font(.system(size: 26, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppTheme.text)
                         .lineSpacing(6)
                         .padding(.top, 36)
                     Text("اختاري عادة واحدة")
@@ -334,7 +331,7 @@ struct StartHabitTogetherScreen: View {
                     } label: {
                         Text("أضيفي عادة جديدة")
                             .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AppTheme.text)
                             .frame(maxWidth: .infinity)
                             .frame(height: 54)
                             .background(FriendsTheme.card.opacity(0.85), in: Capsule())
@@ -351,7 +348,7 @@ struct StartHabitTogetherScreen: View {
                 } label: {
                     Text("المتابعة")
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(Color(red: 0.2, green: 0.1, blue: 0.3))
+                        .foregroundStyle(AppTheme.onAccent)
                         .frame(maxWidth: .infinity)
                         .frame(height: 58)
                         .background(selectedID == nil ? FriendsTheme.pink.opacity(0.55) : FriendsTheme.pink,
@@ -387,14 +384,14 @@ struct TogetherHabitRow: View {
                 }
                 Spacer()
                 ZStack {
-                    Circle().stroke(.white, lineWidth: 1.5).frame(width: 28, height: 28)
+                    Circle().stroke(AppTheme.text, lineWidth: 1.5).frame(width: 28, height: 28)
                     if isSelected {
                         Circle().fill(FriendsTheme.pink).frame(width: 16, height: 16)
                     }
                 }
                 .padding(.leading, 8)
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(AppTheme.text)
             .padding(.horizontal, 20)
             .padding(.vertical, 18)
             .background(FriendsTheme.card, in: RoundedRectangle(cornerRadius: 24))

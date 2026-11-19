@@ -17,7 +17,7 @@ struct HabitCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(habit.name)
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppTheme.text)
                     .strikethrough(habit.isDoneToday, color: Theme.pink)
 
                 // Today: streak and today's count (e.g. water 7 of 15).
@@ -32,7 +32,7 @@ struct HabitCard: View {
                         }
                     }
                     .font(.caption)
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(AppTheme.text.opacity(0.7))
                 }
 
                 journeyRow
@@ -43,7 +43,7 @@ struct HabitCard: View {
             Button(action: onToggleFavorite) {
                 Image(systemName: habit.isFavorite ? "star.fill" : "star")
                     .font(.title)
-                    .foregroundStyle(habit.isFavorite ? Color.yellow : Theme.pink)
+                    .foregroundStyle(habit.isFavorite ? AppTheme.gold : Theme.pink)
             }
             .accessibilityLabel(habit.isFavorite ? "إزالة من المفضلة" : "إضافة إلى المفضلة")
         }
@@ -62,7 +62,7 @@ struct HabitCard: View {
         return HStack(spacing: 8) {
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    Capsule().fill(Color.white.opacity(0.12))
+                    Capsule().fill(AppTheme.text.opacity(0.12))
                     Capsule()
                         .fill(Theme.pink)
                         .frame(width: geo.size.width * progress)
@@ -75,7 +75,7 @@ struct HabitCard: View {
                  ? "اكتملت الرحلة"
                  : "\(arabicNumber(habit.completedDays)) من \(arabicNumber(habit.durationDays)) يوم")
                 .font(.caption2)
-                .foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(AppTheme.text.opacity(0.6))
                 .fixedSize()
         }
         .accessibilityElement(children: .ignore)
@@ -93,14 +93,14 @@ struct HabitCard: View {
         } label: {
             ZStack {
                 Circle()
-                    .stroke(Color.white.opacity(0.12), lineWidth: 4)
+                    .stroke(AppTheme.text.opacity(0.12), lineWidth: 4)
                 Circle()
                     .trim(from: 0, to: ringProgress)
                     .stroke(Theme.pink, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                 Image(systemName: habit.icon)
                     .font(.title3)
-                    .foregroundStyle(isDone ? Theme.pink : Color.white)
+                    .foregroundStyle(isDone ? Theme.pink : AppTheme.text)
             }
             .frame(width: 58, height: 58)
             .animation(.snappy, value: habit.todayCount)

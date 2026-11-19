@@ -67,13 +67,13 @@ struct ComingSoonView: View {
             HStack {
                 Text(title)
                     .font(.largeTitle).bold()
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppTheme.text)
                 Spacer()
             }
             Spacer()
             Text("قريباً")
                 .font(.title2)
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(AppTheme.text.opacity(0.7))
             Spacer()
             BottomTabBar(selected: $selectedTab)
         }

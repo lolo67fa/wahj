@@ -59,10 +59,10 @@ struct MissedHabitView: View {
             VStack(spacing: 8) {
                 Text("افاا فاتتك عادة")
                     .font(.system(size: 32, weight: .bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppTheme.text)
                 Text("ولا يهمك! نجمتك ما انطفت. لك مرة كل شهر ترجع الستريك")
                     .font(.body)
-                    .foregroundStyle(.white.opacity(0.75))
+                    .foregroundStyle(AppTheme.text.opacity(0.75))
                     .multilineTextAlignment(.center)
                 if !habitName.isEmpty {
                     Text(habitName)
@@ -130,13 +130,13 @@ struct ActionButton: View {
                 Text(title)
             }
             .font(.headline)
-            .foregroundStyle(isPrimary ? Theme.bg : Color.white)
+            .foregroundStyle(isPrimary ? Theme.bg : AppTheme.text)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 18)
             .background(
                 Capsule()
                     .fill(isPrimary ? Theme.pink : Theme.card)
-                    .shadow(color: isPrimary ? Color(hex: "4A1A5A") : .clear, radius: 0, y: 4)
+                    .shadow(color: isPrimary ? AppTheme.accentShadow : .clear, radius: 0, y: 4)
             )
             .overlay(Capsule().stroke(Theme.border, lineWidth: isPrimary ? 0 : 1))
         }
