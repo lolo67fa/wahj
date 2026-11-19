@@ -20,7 +20,7 @@ struct RootView: View {
             case 0:
                 HomeView(selectedTab: $selectedTab)
             case 2:
-                StarSelectionView(selectedTab: $selectedTab)
+                MySkyView(selectedTab: $selectedTab)
             default:
                 FriendsTab(selectedTab: $selectedTab)
             }

@@ -109,7 +109,8 @@ struct HomeView: View {
             .background { StarryBackground() }
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(isPresented: $isShowingStars) {
-                StarsView(progress: constellationProgress)
+                // «سمائي»: نفس تجربة تبويب «نجمتي» مع زر رجوع
+                MySkyView(selectedTab: $selectedTab, showsBackButton: true)
             }
         }
         .environment(\.layoutDirection, .leftToRight)
