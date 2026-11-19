@@ -30,7 +30,7 @@ struct ProgressCard: View {
             )
 
             Divider()
-                .overlay(.white.opacity(0.25))
+                .overlay(AppTheme.text.opacity(0.25))
 
             StarProgressSection(
                 pointsTowardNextStar: pointsTowardNextStar,
@@ -40,21 +40,12 @@ struct ProgressCard: View {
                 progress: starProgress
             )
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(AppTheme.text)
         .padding(20)
         .frame(maxWidth: .infinity, minHeight: 215)
         .background(
             RoundedRectangle(cornerRadius: 28)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(hex: "A94BD1"),
-                            Color(hex: "8B3DB0")
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .fill(AppTheme.elevated)
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
@@ -80,7 +71,7 @@ struct DailyProgressSection: View {
 
             Text("\(completedHabitCount) من \(totalHabitCount) عادات مكتملة")
                 .font(.caption)
-                .foregroundStyle(.white.opacity(0.75))
+                .foregroundStyle(AppTheme.text.opacity(0.75))
 
             ProgressView(value: progress)
                 .tint(Theme.cream)
@@ -119,14 +110,14 @@ struct StarProgressSection: View {
                         .foregroundStyle(
                             index < litStarsInConstellation
                             ? Theme.cream
-                            : .white.opacity(0.28)
+                            : AppTheme.text.opacity(0.28)
                         )
                 }
             }
 
             Text("كوكبات مكتملة: \(completedConstellations)")
                 .font(.caption2)
-                .foregroundStyle(.white.opacity(0.75))
+                .foregroundStyle(AppTheme.text.opacity(0.75))
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
     }

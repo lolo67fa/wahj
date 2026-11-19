@@ -6,8 +6,8 @@ struct FriendStarInfo {
 }
 
 struct FriendChooseStarView: View {
-    let background = Color(red: 51/255, green: 32/255, blue: 63/255)
-    let pink = Color(red: 242/255, green: 179/255, blue: 230/255)
+    let background = AppTheme.background
+    let pink = AppTheme.accent
 
     @AppStorage("completedStars") var completedStars = 5
 
@@ -97,7 +97,7 @@ struct FriendChooseStarView: View {
                 } label: {
                     Text("التالي: إرسال الدعوة")
                         .bold()
-                        .foregroundStyle(.black)
+                        .foregroundStyle(AppTheme.onAccent)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(pink)
@@ -105,7 +105,7 @@ struct FriendChooseStarView: View {
                 }
             }
             .padding()
-            .foregroundStyle(.white)
+            .foregroundStyle(AppTheme.text)
         }
         .environment(\.layoutDirection, .rightToLeft)
         .onAppear {
@@ -132,8 +132,8 @@ struct FriendStarCard: View {
     let points: [CGPoint]
     let isSelected: Bool
 
-    let card = Color(red: 75/255, green: 47/255, blue: 92/255)
-    let pink = Color(red: 242/255, green: 179/255, blue: 230/255)
+    let card = AppTheme.surface
+    let pink = AppTheme.accent
 
     var body: some View {
         HStack {

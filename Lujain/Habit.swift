@@ -20,13 +20,13 @@ struct HabitsSection: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("عاداتك اليوم")
                 .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(AppTheme.text)
                 .padding(.horizontal, 4)
 
             if let note {
                 Text(note)
                     .font(.footnote)
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(AppTheme.text.opacity(0.6))
                     .padding(.horizontal, 4)
             }
 
@@ -44,8 +44,8 @@ struct DashboardHabitRow: View {
     let habit: DashboardHabit
     var action: () -> Void
 
-    private let rowColor = Color(red: 0.25, green: 0.18, blue: 0.32)
-    private let accent = Color(red: 0.91, green: 0.70, blue: 0.90)
+    private let rowColor = AppTheme.surface
+    private let accent = AppTheme.accent
 
     var body: some View {
         Button {
@@ -58,7 +58,7 @@ struct DashboardHabitRow: View {
 
                 Text(habit.title)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(AppTheme.text.opacity(0.9))
 
                 Spacer()
 
@@ -72,7 +72,7 @@ struct DashboardHabitRow: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .stroke(.white.opacity(0.12), lineWidth: 1)
+                    .stroke(AppTheme.text.opacity(0.12), lineWidth: 1)
             )
             .overlay(alignment: .trailing) {
                 Capsule()
@@ -97,7 +97,7 @@ struct HabitCheckbox: View {
     let isOn: Bool
     var isEnabled = true
 
-    private let accent = Color(red: 0.91, green: 0.70, blue: 0.90)
+    private let accent = AppTheme.accent
 
     var body: some View {
         ZStack {
@@ -130,14 +130,14 @@ struct PointsBadge: View {
             Text("+\(points)")
                 .font(.system(size: 13, weight: .bold))
         }
-        .foregroundStyle(Color(red: 0.55, green: 0.20, blue: 0.55))
+        .foregroundStyle(AppTheme.accentShadow)
         .padding(.horizontal, 14)
         .padding(.vertical, 7)
         .background(
             Capsule().fill(
                 isDone
-                ? Color(red: 0.98, green: 0.86, blue: 0.92)
-                : Color(red: 0.97, green: 0.93, blue: 0.99)
+                ? AppTheme.accent
+                : AppTheme.text
             )
         )
     }

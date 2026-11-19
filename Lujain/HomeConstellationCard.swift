@@ -9,8 +9,8 @@ struct HomeConstellationCard: View {
     // The next constellation opens when this one reaches 100.
     let nextUnlocked: Bool
 
-    private let pink = Color(red: 242 / 255, green: 179 / 255, blue: 230 / 255)
-    private let secondary = Color(red: 227 / 255, green: 200 / 255, blue: 234 / 255)
+    private let pink = AppTheme.accent
+    private let secondary = AppTheme.textSecondary
 
     private var name: String { StarProgress.names[index] }
     private var isComplete: Bool { points >= HabitProgress.pointsPerConstellation }
@@ -38,7 +38,7 @@ struct HomeConstellationCard: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text(name)
                         .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppTheme.text)
 
                     Spacer(minLength: 8)
 

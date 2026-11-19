@@ -17,17 +17,9 @@ struct WelcomeView: View {
     @State private var showNextMessage = false
     @State private var showHabitIntro = false
 
-    private let pink = Color(
-        red: 242.0 / 255,
-        green: 179.0 / 255,
-        blue: 230.0 / 255
-    )
+    private let pink = AppTheme.accent
 
-    private let secondary = Color(
-        red: 227.0 / 255,
-        green: 200.0 / 255,
-        blue: 234.0 / 255
-    )
+    private let secondary = AppTheme.textSecondary
 
     private var greeting: String {
         userName.isEmpty
@@ -66,11 +58,7 @@ struct WelcomeView: View {
                         )
                         .padding(22)
                         .background(
-                            Color(
-                                red: 67.0 / 255,
-                                green: 42.0 / 255,
-                                blue: 82.0 / 255
-                            ),
+                            AppTheme.field,
                             in: RoundedRectangle(cornerRadius: 26)
                         )
 
@@ -87,11 +75,7 @@ struct WelcomeView: View {
                             Text(greeting)
                                 .font(.title.bold())
                                 .foregroundStyle(
-                                    Color(
-                                        red: 1,
-                                        green: 244.0 / 255,
-                                        blue: 253.0 / 255
-                                    )
+                                    AppTheme.text
                                 )
 
                             Text("كل يوم تلتزم فيه تقرب من نجمتك")
@@ -121,21 +105,13 @@ struct WelcomeView: View {
                     Text("التالي")
                         .font(.headline)
                         .foregroundStyle(
-                            Color(
-                                red: 51.0 / 255,
-                                green: 32.0 / 255,
-                                blue: 63.0 / 255
-                            )
+                            AppTheme.background
                         )
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(pink, in: Capsule())
                         .shadow(
-                            color: Color(
-                                red: 0.35,
-                                green: 0.07,
-                                blue: 0.35
-                            ),
+                            color: AppTheme.accentShadow,
                             radius: 0,
                             y: 5
                         )

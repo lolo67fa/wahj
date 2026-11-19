@@ -103,7 +103,7 @@ struct HomeView: View {
                         "لا توجد بيانات",
                         systemImage: "calendar"
                     )
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppTheme.text)
                 }
             }
             .background { StarryBackground() }
@@ -191,7 +191,7 @@ struct DashboardHeader: View {
             Text(greeting)
                 .font(.largeTitle)
                 .bold()
-                .foregroundStyle(.white)
+                .foregroundStyle(AppTheme.text)
 
             Text(dateText)
                 .font(.headline)

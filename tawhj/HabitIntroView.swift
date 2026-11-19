@@ -15,17 +15,9 @@ struct HabitIntroView: View {
    
     @State private var showStarSelection = false
 
-    private let pink = Color(
-        red: 242.0 / 255,
-        green: 179.0 / 255,
-        blue: 230.0 / 255
-    )
+    private let pink = AppTheme.accent
 
-    private let secondary = Color(
-        red: 227.0 / 255,
-        green: 200.0 / 255,
-        blue: 234.0 / 255
-    )
+    private let secondary = AppTheme.textSecondary
 
     // أماكن النجوم كنسب من مساحة الرسم
     private let points: [CGPoint] = [
@@ -70,11 +62,7 @@ struct HabitIntroView: View {
                             Text("كل عادة تقرّبك")
                                 .font(.title.bold())
                                 .foregroundStyle(
-                                    Color(
-                                        red: 1,
-                                        green: 244.0 / 255,
-                                        blue: 253.0 / 255
-                                    )
+                                    AppTheme.text
                                 )
 
                             Text("من توسيع مدارك، ابدأ أنجز من اليوم")
@@ -104,21 +92,13 @@ struct HabitIntroView: View {
                     Text("التالي")
                         .font(.headline)
                         .foregroundStyle(
-                            Color(
-                                red: 51.0 / 255,
-                                green: 32.0 / 255,
-                                blue: 63.0 / 255
-                            )
+                            AppTheme.background
                         )
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(pink, in: Capsule())
                         .shadow(
-                            color: Color(
-                                red: 0.35,
-                                green: 0.07,
-                                blue: 0.35
-                            ),
+                            color: AppTheme.accentShadow,
                             radius: 0,
                             y: 5
                         )
@@ -283,11 +263,7 @@ struct HabitIntroView: View {
         .frame(minHeight: 72)
         .padding(.horizontal, 4)
         .background(
-            Color(
-                red: 75.0 / 255,
-                green: 47.0 / 255,
-                blue: 92.0 / 255
-            ),
+            AppTheme.surface,
             in: RoundedRectangle(cornerRadius: 17)
         )
         .overlay {

@@ -28,11 +28,7 @@ struct StarSelectionView: View {
     // عند عرض الصفحة كتبويب «نجمتي» يظهر شريط التبويبات بدل زر الرجوع.
     var selectedTab: Binding<Int>? = nil
 
-    private let pink = Color(
-        red: 242 / 255,
-        green: 179 / 255,
-        blue: 230 / 255
-    )
+    private let pink = AppTheme.accent
 
     private var validSelection: Bool {
         (0..<6).contains(selectedStar)
@@ -78,21 +74,13 @@ struct StarSelectionView: View {
                     Text("أضف عاداتك")
                         .font(.system(size: 17, weight: .bold))
                         .foregroundStyle(
-                            Color(
-                                red: 51 / 255,
-                                green: 32 / 255,
-                                blue: 63 / 255
-                            )
+                            AppTheme.background
                         )
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(pink, in: Capsule())
                         .shadow(
-                            color: Color(
-                                red: 89 / 255,
-                                green: 18 / 255,
-                                blue: 88 / 255
-                            ),
+                            color: AppTheme.accentShadow,
                             radius: 0,
                             y: 5
                         )
@@ -124,7 +112,7 @@ struct StarSelectionView: View {
         HStack {
             Text("اختار نجمتك")
                 .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(Color(red: 1, green: 0.957, blue: 0.992))
+                .foregroundStyle(AppTheme.text)
 
             Spacer()
 
@@ -137,7 +125,7 @@ struct StarSelectionView: View {
                     .foregroundStyle(pink)
                     .frame(width: 44, height: 44)
                     .background(
-                        Color(red: 0.294, green: 0.184, blue: 0.361),
+                        AppTheme.surface,
                         in: Circle()
                     )
                     .overlay {
@@ -195,7 +183,7 @@ struct StarSelectionView: View {
                                 .foregroundStyle(pink)
                         }
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AppTheme.text)
 
                     HStack {
                         Text("١٠٠ نقطة")
@@ -208,11 +196,7 @@ struct StarSelectionView: View {
                             Text("مختارة")
                                 .font(.system(size: 10, weight: .semibold))
                                 .foregroundStyle(
-                                    Color(
-                                        red: 51 / 255,
-                                        green: 32 / 255,
-                                        blue: 63 / 255
-                                    )
+                                    AppTheme.background
                                 )
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 4)
@@ -251,11 +235,7 @@ struct ConstellationCardBackground: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(
-                    red: 110 / 255,
-                    green: 63 / 255,
-                    blue: 138 / 255
-                )
+                AppTheme.elevated
 
                 Canvas { context, size in
                     // نقاط ثابتة حتى لا تتغير الخلفية عند الاختيار.
@@ -493,15 +473,11 @@ struct ConstellationDrawing: View {
                     Image(systemName: "lock")
                         .font(.system(size: 15))
                         .foregroundStyle(
-                            Color(red: 242 / 255, green: 179 / 255, blue: 230 / 255)
+                            AppTheme.accent
                         )
                         .frame(width: 36, height: 36)
                         .background(
-                            Color(
-                                red: 110 / 255,
-                                green: 63 / 255,
-                                blue: 138 / 255
-                            ),
+                            AppTheme.elevated,
                             in: Circle()
                         )
                         .overlay {

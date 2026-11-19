@@ -11,18 +11,14 @@ struct ContentView: View {
     @State private var accountID: String?
     @Environment(HabitStore.self) private var habitStore
 
-    private let secondaryText = Color(
-        red: 227.0 / 255,
-        green: 200.0 / 255,
-        blue: 234.0 / 255
-    )
+    private let secondaryText = AppTheme.textSecondary
 
     var body: some View {
         ZStack {
             if checkingSession {
                 SpaceBackground()
                 ProgressView()
-                    .tint(.white)
+                    .tint(AppTheme.text)
             } else if signedIn, let accountID {
                 // كل الصفحات بعد الدخول تقرأ إعداداتها (الاسم، النجمة المختارة...)
                 // من بيانات هذا الحساب فقط.
@@ -83,11 +79,7 @@ struct ContentView: View {
                 Text("نجوم")
                     .font(.system(size: 40, weight: .bold))
                     .foregroundStyle(
-                        Color(
-                            red: 1,
-                            green: 244.0 / 255,
-                            blue: 253.0 / 255
-                        )
+                        AppTheme.text
                     )
 
                 Text("عاداتك اليومية تضوي نجمتك، نجمة بعد نجمة")
@@ -102,14 +94,10 @@ struct ContentView: View {
                     Text("تسجيل الدخول")
                         .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(
-                            Color(
-                                red: 51.0 / 255,
-                                green: 32.0 / 255,
-                                blue: 63.0 / 255
-                            )
+                            AppTheme.background
                         )
                         .frame(width: 280, height: 60)
-                        .background(.white, in: Capsule())
+                        .background(AppTheme.accent, in: Capsule())
                 }
                 .buttonStyle(.plain)
                 .padding(.top, 48)
@@ -137,11 +125,7 @@ private struct EmailLoginView: View {
     @State private var message = ""
     @State private var showMessage = false
 
-    private let pink = Color(
-        red: 242.0 / 255,
-        green: 179.0 / 255,
-        blue: 230.0 / 255
-    )
+    private let pink = AppTheme.accent
 
     private var cleanEmail: String {
         email.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -166,7 +150,7 @@ private struct EmailLoginView: View {
                             : "نورتي من جديد"
                         )
                         .font(.system(size: 28, weight: .bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppTheme.text)
 
                         Text(
                             creatingAccount
@@ -189,7 +173,7 @@ private struct EmailLoginView: View {
                             .autocorrectionDisabled()
                             .padding(16)
                             .background(
-                                .white.opacity(0.08),
+                                AppTheme.field,
                                 in: RoundedRectangle(cornerRadius: 16)
                             )
                             .environment(
@@ -211,7 +195,7 @@ private struct EmailLoginView: View {
                             )
                             .padding(16)
                             .background(
-                                .white.opacity(0.08),
+                                AppTheme.field,
                                 in: RoundedRectangle(cornerRadius: 16)
                             )
 
@@ -226,13 +210,13 @@ private struct EmailLoginView: View {
                                 .textContentType(.newPassword)
                                 .padding(16)
                                 .background(
-                                    .white.opacity(0.08),
+                                    AppTheme.field,
                                     in: RoundedRectangle(cornerRadius: 16)
                                 )
                             }
                         }
                         .font(.system(size: 15))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppTheme.text)
                         .disabled(isLoading)
 
                         if !creatingAccount {
@@ -254,11 +238,7 @@ private struct EmailLoginView: View {
                                 if isLoading {
                                     ProgressView()
                                         .tint(
-                                            Color(
-                                                red: 0.2,
-                                                green: 0.12,
-                                                blue: 0.25
-                                            )
+                                            AppTheme.onAccent
                                         )
                                 } else {
                                     Text(
@@ -272,11 +252,7 @@ private struct EmailLoginView: View {
                             .frame(maxWidth: .infinity)
                             .frame(height: 56)
                             .foregroundStyle(
-                                Color(
-                                    red: 0.2,
-                                    green: 0.12,
-                                    blue: 0.25
-                                )
+                                AppTheme.onAccent
                             )
                             .background(pink, in: Capsule())
                         }

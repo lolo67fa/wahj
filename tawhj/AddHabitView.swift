@@ -58,29 +58,13 @@ struct AddHabitView: View {
         _duration = State(initialValue: editing?.durationDays ?? 21)
     }
 
-    private let pink = Color(
-        red: 242 / 255,
-        green: 179 / 255,
-        blue: 230 / 255
-    )
+    private let pink = AppTheme.accent
 
-    private let surface = Color(
-        red: 67 / 255,
-        green: 42 / 255,
-        blue: 82 / 255
-    )
+    private let surface = AppTheme.field
 
-    private let rowColor = Color(
-        red: 75 / 255,
-        green: 47 / 255,
-        blue: 92 / 255
-    )
+    private let rowColor = AppTheme.surface
 
-    private let borderColor = Color(
-        red: 106 / 255,
-        green: 74 / 255,
-        blue: 124 / 255
-    )
+    private let borderColor = AppTheme.border
 
     private let icons = [
         "book", "waterbottle", "figure.walk", "heart", "clock"
@@ -130,21 +114,13 @@ struct AddHabitView: View {
                     Text(editing == nil ? "ابدأ رحلتك" : "حفظ")
                         .font(.system(size: 17, weight: .bold))
                         .foregroundStyle(
-                            Color(
-                                red: 51 / 255,
-                                green: 32 / 255,
-                                blue: 63 / 255
-                            )
+                            AppTheme.background
                         )
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(pink, in: Capsule())
                         .shadow(
-                            color: Color(
-                                red: 89 / 255,
-                                green: 18 / 255,
-                                blue: 88 / 255
-                            ),
+                            color: AppTheme.accentShadow,
                             radius: 0,
                             y: 5
                         )
@@ -158,7 +134,7 @@ struct AddHabitView: View {
             .padding(.horizontal, 22)
             .padding(.top, 8)
         }
-        .foregroundStyle(Color(red: 1, green: 0.957, blue: 0.992))
+        .foregroundStyle(AppTheme.text)
         .environment(\.layoutDirection, .rightToLeft)
         .preferredColorScheme(.dark)
         .sheet(isPresented: $showTimePicker) {

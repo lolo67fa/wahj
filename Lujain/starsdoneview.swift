@@ -22,7 +22,7 @@ struct StarCompletionView: View {
                 VStack(alignment: .trailing, spacing: 10) {
                     Text("مساء الخير، مها")
                         .font(.largeTitle).bold()
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AppTheme.text)
 
                     Text("الثلاثاء، ١٠ نوفمبر")
                         .font(.headline)
@@ -96,7 +96,7 @@ struct StarCompletionView: View {
                 Button(action: close) {
                     Text("شوف نجمتك")
                         .font(.system(size: 17, weight: .bold))
-                        .foregroundStyle(Color(red: 0.19, green: 0.13, blue: 0.25))
+                        .foregroundStyle(AppTheme.onAccent)
                         .frame(maxWidth: .infinity)
                         .frame(height: 54)
                         .background(Capsule().fill(Theme.pink))

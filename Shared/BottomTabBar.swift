@@ -20,10 +20,12 @@ struct BottomTabBar: View {
                         .frame(width: 26, height: 26)
                     Text(items[i].title).font(.caption2)
                 }
-                .foregroundStyle(.white)
+                // التبويب المحدد: خلفية بنفسجي أفتح وأيقونة ونص بالوردي.
+                .foregroundStyle(selected == i ? AppTheme.accent : AppTheme.text)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
-                .background(selected == i ? Theme.tabActive : Color.clear, in: Capsule())
+                .background(selected == i ? AppTheme.elevated : Color.clear, in: Capsule())
+                .accessibilityAddTraits(selected == i ? .isSelected : [])
                 .contentShape(Capsule())   // the whole tab is tappable, not only the icon and text
                 .onTapGesture { selected = i }
             }
