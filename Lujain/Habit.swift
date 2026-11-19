@@ -1,6 +1,7 @@
 import SwiftUI
 
-struct Habit: Identifiable, Equatable {
+// One row on the home dashboard. Built from the shared HabitStore habit.
+struct DashboardHabit: Identifiable, Equatable {
     let id: String
     var title: String
     var points: Int = 5
@@ -8,7 +9,8 @@ struct Habit: Identifiable, Equatable {
 }
 
 struct HabitsSection: View {
-    @Binding var habits: [Habit]
+    let habits: [DashboardHabit]
+    var onToggle: (DashboardHabit) -> Void = { _ in }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -17,16 +19,19 @@ struct HabitsSection: View {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 4)
 
-            ForEach($habits) { $habit in
-                HabitRow(habit: $habit)
+            ForEach(habits) { habit in
+                DashboardHabitRow(habit: habit) {
+                    onToggle(habit)
+                }
             }
         }
         .padding(.horizontal, 20)
     }
 }
 
-struct HabitRow: View {
-    @Binding var habit: Habit
+struct DashboardHabitRow: View {
+    let habit: DashboardHabit
+    var action: () -> Void
 
     private let rowColor = Color(red: 0.25, green: 0.18, blue: 0.32)
     private let accent = Color(red: 0.91, green: 0.70, blue: 0.90)
@@ -34,7 +39,7 @@ struct HabitRow: View {
     var body: some View {
         Button {
             withAnimation(.spring(duration: 0.3)) {
-                habit.isDone.toggle()
+                action()
             }
         } label: {
             HStack {

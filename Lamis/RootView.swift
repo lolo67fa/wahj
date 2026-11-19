@@ -4,24 +4,25 @@ import SwiftUI
 // shows the "missed habit" page when a day was missed,
 // and congratulates the user when a habit's journey is complete.
 struct RootView: View {
-    @State private var store = HabitStore()
+    @Environment(HabitStore.self) private var store
     @State private var selectedTab = 1
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
+        @Bindable var store = store
+
         Group {
             switch selectedTab {
             case 1:
                 LamisView(selectedTab: $selectedTab)
             case 0:
-                ComingSoonView(title: "الرئيسية", selectedTab: $selectedTab)
+                HomeView(selectedTab: $selectedTab)
             case 2:
-                ComingSoonView(title: "نجمتي", selectedTab: $selectedTab)
+                StarSelectionView(selectedTab: $selectedTab)
             default:
-                ComingSoonView(title: "أصدقائي", selectedTab: $selectedTab)
+                HabitsRootView(selectedTab: $selectedTab)
             }
         }
-        .environment(store)
         // After one missed page closes, show the next missed habit (if any).
         .fullScreenCover(item: $store.missedHabit, onDismiss: { store.showNextMissed() }) { habit in
             MissedHabitView(
@@ -84,4 +85,5 @@ struct ComingSoonView: View {
 
 #Preview {
     RootView()
+        .environment(HabitStore.preview)
 }

@@ -25,6 +25,8 @@ struct Habit: Identifiable, Codable, Hashable {
     // Optional so habits saved before these existed still load.
     var favorite: Bool?
     var streakCount: Int?              // completed days in a row (reset by "start a new streak")
+    // The constellation chosen on the star selection screen when the habit was created.
+    var constellationIndex: Int?
 
     var isFavorite: Bool { favorite ?? false }
     var streak: Int { streakCount ?? 0 }
@@ -46,8 +48,9 @@ struct Habit: Identifiable, Codable, Hashable {
 @Observable
 final class HabitStore {
     var habits: [Habit] = [] {
-        didSet { save() }
+        didSet { if !isPreview { save() } }
     }
+    @ObservationIgnored private var isPreview = false
 
     // The habit to show on the "missed habit" screen, if any.
     var missedHabit: Habit?
@@ -61,14 +64,25 @@ final class HabitStore {
 
     init() {
         UNUserNotificationCenter.current().delegate = ReminderPresenter.shared
-        if UserDefaults.standard.data(forKey: storageKey) == nil {
-            // First launch only: start with example habits.
-            habits = Self.samples
-        } else {
+        if UserDefaults.standard.data(forKey: storageKey) != nil {
             load()
+        }
+        // Habits saved by the onboarding Add Habit page before the screens were merged.
+        let legacy = LegacyHabitMigration.takeSavedHabits()
+        if !legacy.isEmpty {
+            habits.append(contentsOf: legacy)
+            save()
         }
         checkForNewDay()
     }
+
+    // For SwiftUI previews only: starts with example habits and doesn't touch saved data.
+    init(previewHabits: [Habit]) {
+        isPreview = true
+        habits = previewHabits
+    }
+
+    static var preview: HabitStore { HabitStore(previewHabits: samples) }
 
     // MARK: - Adding, editing, deleting
 
@@ -106,10 +120,12 @@ final class HabitStore {
         let wasDone = old.isDoneToday && old.todayCount > 0
         let isDone = habits[index].isDoneToday && habits[index].todayCount > 0
         if wasDone && !isDone {
+            StarProgress.removePoints(StarProgress.pointsPerHabit)
             habits[index].lastCompletedDate = old.previousCompletedDate
             habits[index].completedDays = max(habits[index].completedDays - 1, 0)
             habits[index].streakCount = max(habits[index].streak - 1, 0)
         } else if !wasDone && isDone {
+            StarProgress.awardPoints(StarProgress.pointsPerHabit)
             habits[index].previousCompletedDate = old.lastCompletedDate
             habits[index].lastCompletedDate = .now
             habits[index].completedDays = min(habits[index].completedDays + 1, habits[index].durationDays)
@@ -178,6 +194,7 @@ final class HabitStore {
     }
 
     private func completeToday(at index: Int) {
+        StarProgress.awardPoints(StarProgress.pointsPerHabit)
         habits[index].previousCompletedDate = habits[index].lastCompletedDate
         habits[index].lastCompletedDate = .now
         habits[index].completedDays = min(habits[index].completedDays + 1, habits[index].durationDays)
@@ -191,6 +208,7 @@ final class HabitStore {
 
     private func uncompleteToday(at index: Int) {
         let wasFinished = habits[index].isFinished
+        StarProgress.removePoints(StarProgress.pointsPerHabit)
         habits[index].lastCompletedDate = habits[index].previousCompletedDate
         habits[index].completedDays = max(habits[index].completedDays - 1, 0)
         habits[index].streakCount = max(habits[index].streak - 1, 0)
@@ -298,7 +316,7 @@ final class HabitStore {
         habits = saved
     }
 
-    private static let samples: [Habit] = [
+    static let samples: [Habit] = [
         Habit(name: "قراءة ١٠ صفحات", icon: "book", days: Set(0...6), reminderEnabled: false,
               reminderTime: .now, durationDays: 21, dailyGoal: 1, completedDays: 4,
               favorite: true, streakCount: 4),

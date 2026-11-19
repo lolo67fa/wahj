@@ -133,5 +133,5 @@ struct LamisView: View {
 
 #Preview {
     LamisView(selectedTab: .constant(1))
-        .environment(HabitStore())
+        .environment(HabitStore.preview)
 }

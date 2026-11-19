@@ -8,7 +8,7 @@ struct DailyDashboard: Identifiable, Equatable {
     let dateText: String
     let streakDays: Int
     let goalPoints: Int
-    var habits: [Habit]
+    var habits: [DashboardHabit]
 
     var completedPoints: Int {
         habits
@@ -59,9 +59,9 @@ enum SampleDashboardData {
             streakDays: 2,
             goalPoints: 15,
             habits: [
-                Habit(id: "reading", title: "قراءة ١٠ صفحات", isDone: true),
-                Habit(id: "water", title: "شرب الماء"),
-                Habit(id: "walk", title: "مشي ٢٠ دقيقة")
+                DashboardHabit(id: "reading", title: "قراءة ١٠ صفحات", isDone: true),
+                DashboardHabit(id: "water", title: "شرب الماء"),
+                DashboardHabit(id: "walk", title: "مشي ٢٠ دقيقة")
             ]
         ),
         DailyDashboard(
@@ -73,9 +73,9 @@ enum SampleDashboardData {
             streakDays: 3,
             goalPoints: 15,
             habits: [
-                Habit(id: "reading", title: "قراءة ١٠ صفحات"),
-                Habit(id: "water", title: "شرب الماء", isDone: true),
-                Habit(id: "walk", title: "مشي ٢٠ دقيقة", isDone: true)
+                DashboardHabit(id: "reading", title: "قراءة ١٠ صفحات"),
+                DashboardHabit(id: "water", title: "شرب الماء", isDone: true),
+                DashboardHabit(id: "walk", title: "مشي ٢٠ دقيقة", isDone: true)
             ]
         ),
         DailyDashboard(
@@ -87,9 +87,9 @@ enum SampleDashboardData {
             streakDays: 4,
             goalPoints: 15,
             habits: [
-                Habit(id: "reading", title: "قراءة ١٠ صفحات", isDone: true),
-                Habit(id: "water", title: "شرب الماء"),
-                Habit(id: "walk", title: "مشي ٢٠ دقيقة")
+                DashboardHabit(id: "reading", title: "قراءة ١٠ صفحات", isDone: true),
+                DashboardHabit(id: "water", title: "شرب الماء"),
+                DashboardHabit(id: "walk", title: "مشي ٢٠ دقيقة")
             ]
         ),
         DailyDashboard(
@@ -101,9 +101,9 @@ enum SampleDashboardData {
             streakDays: 5,
             goalPoints: 15,
             habits: [
-                Habit(id: "reading", title: "قراءة ١٠ صفحات", isDone: true),
-                Habit(id: "water", title: "شرب الماء", isDone: true),
-                Habit(id: "walk", title: "مشي ٢٠ دقيقة")
+                DashboardHabit(id: "reading", title: "قراءة ١٠ صفحات", isDone: true),
+                DashboardHabit(id: "water", title: "شرب الماء", isDone: true),
+                DashboardHabit(id: "walk", title: "مشي ٢٠ دقيقة")
             ]
         ),
         DailyDashboard(
@@ -115,9 +115,9 @@ enum SampleDashboardData {
             streakDays: 6,
             goalPoints: 15,
             habits: [
-                Habit(id: "reading", title: "قراءة ١٠ صفحات", isDone: true),
-                Habit(id: "water", title: "شرب الماء", isDone: true),
-                Habit(id: "walk", title: "مشي ٢٠ دقيقة", isDone: true)
+                DashboardHabit(id: "reading", title: "قراءة ١٠ صفحات", isDone: true),
+                DashboardHabit(id: "water", title: "شرب الماء", isDone: true),
+                DashboardHabit(id: "walk", title: "مشي ٢٠ دقيقة", isDone: true)
             ]
         ),
         DailyDashboard(
@@ -129,9 +129,9 @@ enum SampleDashboardData {
             streakDays: 7,
             goalPoints: 15,
             habits: [
-                Habit(id: "reading", title: "قراءة ١٠ صفحات"),
-                Habit(id: "water", title: "شرب الماء"),
-                Habit(id: "walk", title: "مشي ٢٠ دقيقة")
+                DashboardHabit(id: "reading", title: "قراءة ١٠ صفحات"),
+                DashboardHabit(id: "water", title: "شرب الماء"),
+                DashboardHabit(id: "walk", title: "مشي ٢٠ دقيقة")
             ]
         ),
         DailyDashboard(
@@ -143,9 +143,9 @@ enum SampleDashboardData {
             streakDays: 8,
             goalPoints: 15,
             habits: [
-                Habit(id: "reading", title: "قراءة ١٠ صفحات"),
-                Habit(id: "water", title: "شرب الماء", isDone: true),
-                Habit(id: "walk", title: "مشي ٢٠ دقيقة")
+                DashboardHabit(id: "reading", title: "قراءة ١٠ صفحات"),
+                DashboardHabit(id: "water", title: "شرب الماء", isDone: true),
+                DashboardHabit(id: "walk", title: "مشي ٢٠ دقيقة")
             ]
         )
     ]

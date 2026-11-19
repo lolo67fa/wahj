@@ -7,6 +7,10 @@ struct ContentView: View {
     @State private var checkingSession = true
     @State private var authListener: AuthStateDidChangeListenerHandle?
 
+    // تتفعّل بعد إضافة أول عادة من صفحات البداية.
+    @AppStorage("hasCompletedOnboarding")
+    private var hasCompletedOnboarding = false
+
     private let secondaryText = Color(
         red: 227.0 / 255,
         green: 200.0 / 255,
@@ -20,7 +24,11 @@ struct ContentView: View {
                 ProgressView()
                     .tint(.white)
             } else if signedIn {
-                OnboardingView()
+                if hasCompletedOnboarding {
+                    RootView()
+                } else {
+                    OnboardingView()
+                }
             } else {
                 welcomeScreen
             }

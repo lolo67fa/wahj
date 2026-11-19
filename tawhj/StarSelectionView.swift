@@ -7,6 +7,17 @@ enum StarProgress {
     ]
 
     static let pointsPerStar = 100
+    // Completing a habit for the day gives 5 points (see HabitIntroView).
+    static let pointsPerHabit = 5
+
+    // Takes points back when today's completion is undone.
+    static func removePoints(_ amount: Int) {
+        guard amount > 0 else { return }
+
+        let defaults = UserDefaults.standard
+        let current = max(defaults.integer(forKey: "starTotalPoints"), 0)
+        defaults.set(max(current - amount, 0), forKey: "starTotalPoints")
+    }
 
     static func awardPoints(_ amount: Int) {
         guard amount > 0 else { return }
@@ -37,6 +48,9 @@ struct StarSelectionView: View {
 
     // نربط هذا الإجراء بصفحة إضافة العادة عند تجهيزها.
     var onAddHabit: () -> Void = {}
+
+    // عند عرض الصفحة كتبويب «نجمتي» يظهر شريط التبويبات بدل زر الرجوع.
+    var selectedTab: Binding<Int>? = nil
 
     private let pink = Color(
         red: 242 / 255,
@@ -114,7 +128,12 @@ struct StarSelectionView: View {
                 .buttonStyle(.plain)
                 .disabled(!validSelection)
                 .padding(.horizontal, 10)
-                .padding(.bottom, 24)
+                .padding(.bottom, selectedTab == nil ? 24 : 0)
+
+                if let selectedTab {
+                    BottomTabBar(selected: selectedTab)
+                        .padding(.bottom, 8)
+                }
             }
             .padding(.horizontal, 22)
             .padding(.top, 8)
@@ -137,6 +156,7 @@ struct StarSelectionView: View {
 
             Spacer()
 
+            if selectedTab == nil {
             Button {
                 dismiss()
             } label: {
@@ -154,7 +174,9 @@ struct StarSelectionView: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("رجوع")
+            }
         }
+        .frame(minHeight: 44)
     }
 
     private func points(for index: Int) -> Int {
@@ -518,4 +540,5 @@ private struct ConstellationDrawing: View {
 
 #Preview {
     StarSelectionView()
+        .environment(HabitStore.preview)
 }
