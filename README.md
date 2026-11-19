@@ -107,7 +107,7 @@ Colors are Color Sets in `Assets.xcassets` (named `ThemeBg`, `ThemePink` and so 
 |---|---|---|
 | Ghala | Sign in, appearance, name, welcome, first-time experience | [@lolo67fa](https://github.com/lolo67fa) |
 | Ghaida | Daily habits flow: create a habit, set a duration, mark as done | [@Ghhaidaa](https://github.com/Ghhaidaa) |
-| Lujain | Home, first star, completed constellation | [@lujainayman1602-ux](https://github.com/lujainayman1602-ux) |
+| Lujain | Home, first star, completed constellation, Stars design artist| [@lujainayman1602-ux](https://github.com/lujainayman1602-ux) |
 | Lamis | My Habits, Missed Habit, Add Habit, Settings | [@xtvkyx](https://github.com/xtvkyx) |
 | Mays | Friends: home, choose a habit, choose a constellation, invitation, progress | [@maysAlh](https://github.com/maysAlh) |
 | Zaha | Friends: home, choose a habit, choose a constellation, invitation, progress | [@zaha7](https://github.com/zaha7) |
