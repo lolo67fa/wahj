@@ -42,10 +42,10 @@ struct FriendsTab: View {
 struct FriendsEmptyView: View {
     @Binding var path: [String]
 
-    let background = Color(red: 51/255, green: 32/255, blue: 63/255)
-    let card = Color(red: 75/255, green: 47/255, blue: 92/255)
-    let pink = Color(red: 242/255, green: 179/255, blue: 230/255)
-    let yellow = Color(red: 1.0, green: 0.85, blue: 0.30)
+    let background = Theme.bg
+    let card = Theme.card
+    let pink = Theme.pink
+    let yellow = Theme.starLit
 
     var body: some View {
         ZStack {
@@ -84,7 +84,7 @@ struct FriendsEmptyView: View {
                 } label: {
                     Text("ابدأ عادة مع صديق")
                         .bold()
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Theme.onAccent)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(pink)
@@ -107,7 +107,7 @@ struct FriendsEmptyView: View {
                 Spacer()
             }
             .padding()
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.text)
         }
         .environment(\.layoutDirection, .rightToLeft)
     }
@@ -118,9 +118,9 @@ struct FriendChooseHabitView: View {
     @Binding var selectedHabit: String
     @Binding var path: [String]
 
-    let background = Color(red: 51/255, green: 32/255, blue: 63/255)
-    let card = Color(red: 75/255, green: 47/255, blue: 92/255)
-    let pink = Color(red: 242/255, green: 179/255, blue: 230/255)
+    let background = Theme.bg
+    let card = Theme.card
+    let pink = Theme.pink
 
     // عادات المستخدمة
     let habits = [
@@ -183,7 +183,7 @@ struct FriendChooseHabitView: View {
                 } label: {
                     Text("المتابعة")
                         .bold()
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Theme.onAccent)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(pink)
@@ -194,7 +194,7 @@ struct FriendChooseHabitView: View {
                 .opacity(selectedHabit.isEmpty ? 0.5 : 1)
             }
             .padding()
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.text)
         }
         .environment(\.layoutDirection, .rightToLeft)
     }

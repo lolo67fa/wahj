@@ -14,7 +14,7 @@ struct HabitsSection: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("عاداتك اليوم")
                 .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
                 .padding(.horizontal, 4)
 
             ForEach($habits) { $habit in
@@ -28,8 +28,8 @@ struct HabitsSection: View {
 struct HabitRow: View {
     @Binding var habit: Habit
 
-    private let rowColor = Color(red: 0.25, green: 0.18, blue: 0.32)
-    private let accent = Color(red: 0.91, green: 0.70, blue: 0.90)
+    private let rowColor = Theme.card
+    private let accent = Theme.pink
 
     var body: some View {
         Button {
@@ -40,7 +40,7 @@ struct HabitRow: View {
             HStack {
                 Text(habit.title)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(Theme.text.opacity(0.9))
 
                 Spacer()
 
@@ -54,7 +54,7 @@ struct HabitRow: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .stroke(.white.opacity(0.12), lineWidth: 1)
+                    .stroke(Theme.text.opacity(0.12), lineWidth: 1)
             )
             .overlay(alignment: .trailing) {
                 Capsule()

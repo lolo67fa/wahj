@@ -1,12 +1,16 @@
 import SwiftUI
 
 enum Theme {
-    static let bg        = Color(hex: "2F2240")
-    static let card      = Color(hex: "3F2B55")
-    static let border    = Color(hex: "5A3F73")
-    static let pink      = Color(hex: "E6B4E1")
-    static let cream     = Color(hex: "FBEFC8")
-    static let tabActive = Color(hex: "9B6BC0")
+    static let bg        = Color("ThemeBg")
+    static let card      = Color("ThemeCard")
+    static let border    = Color("ThemeBorder")
+    static let pink      = Color("ThemePink")
+    static let cream     = Color("ThemePoints")   // warm text accent (Figma text/points)
+    static let tabActive = Color("ThemeTabActive")
+    static let text      = Color("ThemeText")
+    static let onAccent  = Color("ThemeOnAccent")
+    static let decorLine = Color("ThemeDecorLine")
+    static let starLit   = Color("ThemeStarLit")
 }
 
 extension Color {

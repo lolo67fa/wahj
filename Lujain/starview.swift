@@ -14,7 +14,7 @@ struct StarsView: View {
                 Text("نجومي")
                     .font(.largeTitle)
                     .bold()
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
 
                 VStack(spacing: 12) {
                     StatRow(title: "النجمة الحالية", value: "\(progress.currentStarNumber)")
@@ -41,7 +41,7 @@ private struct StatRow: View {
     var body: some View {
         HStack {
             Text(title)
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
             Spacer()
             Text(value)
                 .bold()

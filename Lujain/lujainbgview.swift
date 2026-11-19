@@ -69,7 +69,7 @@ struct ContentView: View {
                         "لا توجد بيانات",
                         systemImage: "calendar"
                     )
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 }
             }
             .background { StarryBackground() }
@@ -150,7 +150,7 @@ struct DashboardHeader: View {
             Text(greeting)
                 .font(.largeTitle)
                 .bold()
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
 
             Text(dateText)
                 .font(.headline)

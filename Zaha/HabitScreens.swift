@@ -4,15 +4,15 @@ import SwiftUI
 // MARK: - Theme
 
 enum Theme {
-    static let background = color(51, 32, 63)
-    static let card = color(75, 47, 92)
-    static let cardSoft = color(70, 51, 82)
-    static let hero = color(110, 63, 138)
-    static let pink = color(242, 179, 230)
-    static let purple = color(164, 110, 194)
-    static let yellow = color(255, 230, 146)
-    static let text = color(255, 241, 253)
-    static let subtle = color(231, 203, 231)
+    static let background = Color("ThemeBg")
+    static let card = Color("ThemeCard")
+    static let cardSoft = Color("ThemeCard")
+    static let hero = Color("ThemeSky")
+    static let pink = Color("ThemePink")
+    static let purple = Color("ThemeTabActive")
+    static let yellow = Color("ThemeStarLit")
+    static let text = Color("ThemeText")
+    static let subtle = Color("ThemeTextSecondary")
 
     private static func color(_ red: Double, _ green: Double, _ blue: Double) -> Color {
         Color(.sRGB, red: red / 255, green: green / 255, blue: blue / 255)
@@ -248,7 +248,7 @@ struct AppTabBar: View {
                         .foregroundStyle(tab == selected ? Theme.pink : Theme.text)
                     Text(tab.title).font(.system(size: 11, weight: .medium))
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
                 .background(tab == selected ? Theme.purple : Color.clear,
@@ -294,7 +294,7 @@ struct StartHabitTogetherScreen: View {
                         }
                         .accessibilityLabel("رجوع")
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                     .padding(.top, 12)
                     Text("وش العادة اللي تبغون\nتبدؤونها سوا؟")
                         .font(.system(size: 26, weight: .bold))
@@ -318,7 +318,7 @@ struct StartHabitTogetherScreen: View {
                     } label: {
                         Text("أضيفي عادة جديدة")
                             .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Theme.text)
                             .frame(maxWidth: .infinity)
                             .frame(height: 54)
                             .background(Theme.card.opacity(0.85), in: Capsule())
@@ -335,7 +335,7 @@ struct StartHabitTogetherScreen: View {
                 } label: {
                     Text("المتابعة")
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(Color(red: 0.2, green: 0.1, blue: 0.3))
+                        .foregroundStyle(Color("ThemeOnAccent"))
                         .frame(maxWidth: .infinity)
                         .frame(height: 58)
                         .background(selectedID == nil ? Theme.pink.opacity(0.55) : Theme.pink,
@@ -368,14 +368,14 @@ struct HabitRow: View {
                 }
                 Spacer()
                 ZStack {
-                    Circle().stroke(.white, lineWidth: 1.5).frame(width: 28, height: 28)
+                    Circle().stroke(Theme.text, lineWidth: 1.5).frame(width: 28, height: 28)
                     if isSelected {
                         Circle().fill(Theme.pink).frame(width: 16, height: 16)
                     }
                 }
                 .padding(.leading, 8)
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.text)
             .padding(.horizontal, 20)
             .padding(.vertical, 18)
             .background(Theme.card, in: RoundedRectangle(cornerRadius: 24))
