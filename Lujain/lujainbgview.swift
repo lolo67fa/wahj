@@ -4,33 +4,24 @@ struct HomeView: View {
     @Environment(HabitStore.self) private var store
     @Binding var selectedTab: Int
 
-    // الاسم من صفحة «وش حاب نناديك؟» والنقاط من StarProgress
+    // الاسم من صفحة «وش حاب نناديك؟» والمجموعة من صفحة «اختار نجمتك»
     @AppStorage("displayName") private var displayName = ""
-    @AppStorage("starTotalPoints") private var totalPoints = 0
+    @AppStorage("selectedStarIndex") private var selectedStar = 0
 
     @State private var selectedDayID: String
-    @State private var isShowingStarCompletion = false
     @State private var isShowingStars = false
 
     init(selectedTab: Binding<Int> = .constant(0)) {
         _selectedTab = selectedTab
-        _selectedDayID = State(initialValue: Self.dayID(for: Date()))
-    }
-
-    private static func dayID(for date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
+        _selectedDayID = State(initialValue: DayKey.key(for: .now))
     }
 
     // MARK: - Derived state
 
-    // The current week (Saturday ... Friday), built from the shared habits.
+    // The current week (Saturday ... Friday) around the real today, from the shared habits.
     private var days: [DailyDashboard] {
         let calendar = Calendar.current
-        let today = calendar.startOfDay(for: .now)
+        let today = store.today
         let todayIndex = Habit.dayIndex(of: today)
         guard let saturday = calendar.date(byAdding: .day, value: -todayIndex, to: today) else { return [] }
 
@@ -41,19 +32,21 @@ struct HomeView: View {
 
     private func dashboard(for date: Date) -> DailyDashboard {
         let calendar = Calendar.current
-        let isToday = calendar.isDateInToday(date)
         let dayIndex = Habit.dayIndex(of: date)
+        let editable = store.canEditCompletion(on: date)
+        let isFuture = calendar.startOfDay(for: date) > store.today
 
+        // Habits due that day (its weekdays, after it started, journey not finished before it).
         let habits = store.habits
-            .filter { $0.days.contains(dayIndex) && !$0.isFinished }
+            .filter { !$0.isDemoData && store.isDue($0, on: date) }
             .map { habit in
                 DashboardHabit(
                     id: habit.id.uuidString,
                     title: habit.name,
                     points: StarProgress.pointsPerHabit,
-                    isDone: isToday
-                        ? habit.isDoneToday
-                        : habit.lastCompletedDate.map { calendar.isDate($0, inSameDayAs: date) } ?? false
+                    isDone: store.isCompleted(habit, on: date),
+                    isEditable: editable,
+                    isFuture: isFuture
                 )
             }
 
@@ -62,14 +55,15 @@ struct HomeView: View {
         let dayLetters = ["س", "ح", "ن", "ث", "ر", "خ", "ج"]
 
         return DailyDashboard(
-            id: Self.dayID(for: date),
+            id: DayKey.key(for: date),
             weekdaySymbol: dayLetters[dayIndex],
             dayNumber: arabicNumber(calendar.component(.day, from: date)),
             greeting: displayName.isEmpty ? greeting : "\(greeting)، \(displayName)",
             dateText: date.formatted(
                 .dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "ar"))
             ),
-            streakDays: store.habits.map(\.streak).max() ?? 0,
+            // ستريك التطبيق من سجل الإنجازات وبالتاريخ الحقيقي، لا اليوم المعروض.
+            streakDays: store.appStreak,
             goalPoints: habits.count * StarProgress.pointsPerHabit,
             habits: habits
         )
@@ -79,15 +73,22 @@ struct HomeView: View {
         days.first { $0.id == selectedDayID }
     }
 
-    // Only today's habits can be marked done from the home page.
+    private var isTodaySelected: Bool { selectedDayID == DayKey.key(for: store.today) }
+
+    // The chosen constellation (from «اختار نجمتك»).
+    private var constellationIndex: Int {
+        min(max(selectedStar, 0), HabitProgress.constellationCount - 1)
+    }
+
+    // Only today's completion can be changed from the home page.
     private func toggle(_ row: DashboardHabit) {
-        guard selectedDayID == Self.dayID(for: Date()),
+        guard row.isEditable,
               let habit = store.habits.first(where: { $0.id.uuidString == row.id }) else { return }
         store.toggleDone(habit)
     }
 
     private var constellationProgress: ConstellationProgress {
-        ConstellationProgress(totalPoints: totalPoints)
+        ConstellationProgress(totalPoints: store.constellations.total)
     }
 
     // MARK: - Body
@@ -112,13 +113,11 @@ struct HomeView: View {
             }
         }
         .environment(\.layoutDirection, .leftToRight)
-        .onChange(of: constellationProgress.earnedStars) { oldValue, newValue in
-            if newValue > oldValue {
-                isShowingStarCompletion = true
+        // If the app stays open past midnight, move the selection to the new day.
+        .onChange(of: store.today) { oldDay, newDay in
+            if selectedDayID == DayKey.key(for: oldDay) {
+                selectedDayID = DayKey.key(for: newDay)
             }
-        }
-        .fullScreenCover(isPresented: $isShowingStarCompletion) {
-            StarCompletionView()
         }
     }
 
@@ -130,31 +129,32 @@ struct HomeView: View {
                 streakDays: day.streakDays
             )
 
-            Button {
-                isShowingStars = true
-            } label: {
-                ProgressCard(
-                    completedPoints: day.completedPoints,
-                    goalPoints: day.goalPoints,
-                    completedHabitCount: day.completedHabitCount,
-                    totalHabitCount: day.habits.count,
-                    pointsTowardNextStar: constellationProgress.pointsTowardNextStar,
-                    currentStarNumber: constellationProgress.currentStarNumber,
-                    litStarsInConstellation: constellationProgress.litStarsInCurrentConstellation,
-                    completedConstellations: constellationProgress.completedConstellations
-                )
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-
-            WeekDaysView(days: days, selectedDayID: $selectedDayID)
-                .environment(\.layoutDirection, .rightToLeft)
-
             ScrollView {
-                HabitsSection(habits: day.habits, onToggle: toggle)
+                VStack(alignment: .trailing, spacing: 20) {
+                    Button {
+                        isShowingStars = true
+                    } label: {
+                        HomeConstellationCard(
+                            index: constellationIndex,
+                            points: store.constellationPoints(constellationIndex),
+                            nextUnlocked: store.isConstellationUnlocked(constellationIndex + 1)
+                        )
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+
+                    WeekDaysView(days: days, selectedDayID: $selectedDayID)
+                        .environment(\.layoutDirection, .rightToLeft)
+
+                    HabitsSection(
+                        habits: day.habits,
+                        note: dayNote(for: day),
+                        onToggle: toggle
+                    )
                     .padding(.horizontal, -20)
                     .padding(.bottom, 24)
                     .environment(\.layoutDirection, .rightToLeft)
+                }
             }
             .scrollIndicators(.hidden)
             .frame(maxHeight: .infinity, alignment: .top)
@@ -168,6 +168,14 @@ struct HomeView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 8)
         }
+    }
+
+    private func dayNote(for day: DailyDashboard) -> String? {
+        if day.habits.isEmpty { return "ما فيه عادات مستحقة في هذا اليوم" }
+        if isTodaySelected { return nil }
+        return day.habits.first?.isFuture == true
+            ? "ما تقدر تنجز عادات يوم ما جاء"
+            : "الأيام السابقة للعرض فقط"
     }
 }
 
@@ -192,7 +200,7 @@ struct DashboardHeader: View {
 
             HStack(spacing: 6) {
                 Image(systemName: "flame.fill")
-                Text("\(streakDays) أيام متتالية")
+                Text("\(arabicNumber(streakDays)) أيام متتالية")
                     .font(.subheadline)
             }
             .foregroundStyle(Theme.cream)

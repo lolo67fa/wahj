@@ -27,6 +27,12 @@ struct Habit: Identifiable, Codable, Hashable {
     var streakCount: Int?              // completed days in a row (reset by "start a new streak")
     // The constellation chosen on the star selection screen when the habit was created.
     var constellationIndex: Int?
+    // Set by "start a new streak": the journey counts again from this day.
+    var journeyStartDate: Date?
+    // Days completed before the completion log existed (imported from older data).
+    var baselineCompletedDays: Int?
+    // Example habits for previews only, never part of a real account.
+    var isDemo: Bool?
 
     var isFavorite: Bool { favorite ?? false }
     var streak: Int { streakCount ?? 0 }
@@ -44,13 +50,33 @@ struct Habit: Identifiable, Codable, Hashable {
     }
 }
 
-// Holds all habits and saves them to UserDefaults so they survive app relaunches.
+extension Habit: ProgressTrackable {
+    var isDemoData: Bool { isDemo ?? false }
+}
+
+// Holds all habits and the completion log for the signed-in account and saves
+// them to that account's own UserDefaults (on this device only; nothing is
+// synced to Firebase). Points, unlocked constellations and streaks are always
+// recomputed from the log, so undoing a completion can't leave stale points.
 @Observable
 final class HabitStore {
     var habits: [Habit] = [] {
-        didSet { if !isPreview { save() } }
+        didSet { if canPersist { save() } }
     }
-    @ObservationIgnored private var isPreview = false
+    // True only while a signed-in account's data is loaded.
+    @ObservationIgnored private var canPersist = false
+    @ObservationIgnored private var includeDemo = false
+    @ObservationIgnored private var defaults: UserDefaults = .standard
+
+    // Firebase UID of the account whose data is loaded (nil when signed out).
+    private(set) var accountID: String?
+    private(set) var log = HabitLog()
+
+    // Computed from the log by recompute().
+    private(set) var constellations = HabitProgress.Constellations()
+    private(set) var appStreak = 0
+    // The real current day (not the day selected in the UI).
+    private(set) var today = Calendar.current.startOfDay(for: .now)
 
     // The habit to show on the "missed habit" screen, if any.
     var missedHabit: Habit?
@@ -60,29 +86,156 @@ final class HabitStore {
     private var skippedMissedIDs: Set<UUID> = []
 
     private let storageKey = "savedHabits.v2"
+    private let logKey = "habitLog.v1"
     private let saverKey = "lastStreakSaverDate"
 
+    // Nothing is loaded until an account signs in; see activate(account:).
     init() {
         UNUserNotificationCenter.current().delegate = ReminderPresenter.shared
-        if UserDefaults.standard.data(forKey: storageKey) != nil {
-            load()
-        }
-        // Habits saved by the onboarding Add Habit page before the screens were merged.
-        let legacy = LegacyHabitMigration.takeSavedHabits()
-        if !legacy.isEmpty {
-            habits.append(contentsOf: legacy)
-            save()
-        }
-        checkForNewDay()
     }
 
-    // For SwiftUI previews only: starts with example habits and doesn't touch saved data.
+    // For SwiftUI previews only: example habits, marked as demo, never saved.
     init(previewHabits: [Habit]) {
-        isPreview = true
+        includeDemo = true
         habits = previewHabits
+        recompute()
     }
 
     static var preview: HabitStore { HabitStore(previewHabits: samples) }
+
+    // MARK: - Accounts
+
+    // Each Firebase account keeps its data in its own UserDefaults suite.
+    static func accountDefaults(for accountID: String) -> UserDefaults {
+        // suiteName only returns nil for the app's own bundle ID or the global domain.
+        UserDefaults(suiteName: "wahj.account.\(accountID)")!
+    }
+
+    // Loads the data of the account that just signed in (or clears it on sign-out).
+    func activate(account newAccountID: String?) {
+        guard newAccountID != accountID else { return }
+
+        // Reminders belong to the previous account; don't show its habit names to the next one.
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        canPersist = false
+        accountID = newAccountID
+        habits = []
+        log = HabitLog()
+        missedHabit = nil
+        justFinished = nil
+        skippedMissedIDs = []
+
+        guard let newAccountID else {
+            recompute()
+            return
+        }
+        defaults = Self.accountDefaults(for: newAccountID)
+        habits = loadHabits()
+        log = loadLog()
+        canPersist = true
+        checkForNewDay()
+        for habit in habits {
+            Task { await ReminderScheduler.schedule(habit) }
+        }
+    }
+
+    // Adds habits from data saved on this device before accounts were separated.
+    // Only called after the user agrees (see LegacyHabitMigration).
+    func importLegacyHabits(_ legacy: [Habit]) {
+        guard canPersist else { return }
+        let existing = Set(habits.map(\.id))
+        let new = legacy.filter { !existing.contains($0.id) }.map { old -> Habit in
+            var habit = old
+            // Their earlier progress has no log entries: keep it as the journey's baseline
+            // (shown on the habit card), without inventing points or streak days.
+            habit.baselineCompletedDays = old.completedDays
+            habit.todayCount = 0
+            return habit
+        }
+        habits.append(contentsOf: new)
+        recompute()
+        for habit in new {
+            Task { await ReminderScheduler.schedule(habit) }
+        }
+    }
+
+    // MARK: - Reading progress
+
+    func isCompleted(_ habit: Habit, on date: Date) -> Bool {
+        let key = DayKey.key(for: date)
+        return log.records.contains { $0.habitID == habit.id && $0.day == key }
+    }
+
+    // Whether the habit is due that day (its weekday, after it was created, journey not finished).
+    func isDue(_ habit: Habit, on date: Date) -> Bool {
+        timeline(for: habit).isDue(date, key: DayKey.key(for: date))
+    }
+
+    // Only today's completions can be changed for now; past days are read-only
+    // and future days can't be completed.
+    func canEditCompletion(on date: Date) -> Bool {
+        Calendar.current.isDate(date, inSameDayAs: .now)
+    }
+
+    func constellationPoints(_ index: Int) -> Int {
+        constellations.points.indices.contains(index) ? constellations.points[index] : 0
+    }
+
+    func isConstellationUnlocked(_ index: Int) -> Bool {
+        constellations.isUnlocked(index)
+    }
+
+    private func timeline(for habit: Habit) -> HabitProgress.Timeline {
+        HabitProgress.Timeline(habit: habit, log: log, includeDemo: includeDemo, calendar: DayKey.calendar())
+    }
+
+    // Everything derived from the log: journey days, streaks, points, unlocked constellations.
+    private func recompute() {
+        let calendar = DayKey.calendar()
+        today = Calendar.current.startOfDay(for: .now)
+
+        var updated = habits
+        for index in updated.indices {
+            let line = timeline(for: updated[index])
+            updated[index].completedDays = min(line.journeyCompletions(), updated[index].durationDays)
+            updated[index].streakCount = HabitProgress.streak(timelines: [line], today: .now, calendar: calendar)
+            if let lastKey = line.completedKeys.last,
+               let lastRecord = log.records.last(where: { $0.habitID == updated[index].id && $0.day == lastKey }) {
+                updated[index].lastCompletedDate = lastRecord.recordedAt
+            } else if updated[index].baselineCompletedDays == nil {
+                updated[index].lastCompletedDate = nil
+            }
+        }
+        if updated != habits { habits = updated }
+
+        constellations = HabitProgress.constellations(from: log.records, includeDemo: includeDemo)
+        appStreak = HabitProgress.appStreak(habits: habits, log: log, today: .now,
+                                            calendar: calendar, includeDemo: includeDemo)
+    }
+
+    // MARK: - Completion log
+
+    // Adds today's completion once; pressing again or relaunching never adds a second one.
+    private func addCompletion(at index: Int) {
+        let habit = habits[index]
+        let key = DayKey.key(for: .now)
+        guard !log.records.contains(where: { $0.habitID == habit.id && $0.day == key }) else { return }
+
+        let selected = defaults.object(forKey: "selectedStarIndex") as? Int ?? 0
+        let constellation = min(max(habit.constellationIndex ?? selected, 0), HabitProgress.constellationCount - 1)
+        log.records.append(CompletionRecord(
+            habitID: habit.id, day: key, constellationIndex: constellation,
+            recordedAt: .now, isDemo: habit.isDemo
+        ))
+        saveLog()
+    }
+
+    private func removeCompletion(at index: Int) {
+        let id = habits[index].id
+        let key = DayKey.key(for: .now)
+        log.records.removeAll { $0.habitID == id && $0.day == key }
+        saveLog()
+    }
 
     // MARK: - Adding, editing, deleting
 
@@ -111,6 +264,10 @@ final class HabitStore {
         updated.lastResolvedDate = old.lastResolvedDate
         updated.streakCount = old.streakCount
         updated.favorite = old.favorite
+        updated.journeyStartDate = old.journeyStartDate
+        updated.baselineCompletedDays = old.baselineCompletedDays
+        updated.isDemo = old.isDemo
+        updated.createdAt = old.createdAt
         if habit.days != old.days && !hadMissed {
             updated.lastResolvedDate = Calendar.current.date(byAdding: .day, value: -1, to: .now)
         }
@@ -120,17 +277,12 @@ final class HabitStore {
         let wasDone = old.isDoneToday && old.todayCount > 0
         let isDone = habits[index].isDoneToday && habits[index].todayCount > 0
         if wasDone && !isDone {
-            StarProgress.removePoints(StarProgress.pointsPerHabit)
-            habits[index].lastCompletedDate = old.previousCompletedDate
-            habits[index].completedDays = max(habits[index].completedDays - 1, 0)
-            habits[index].streakCount = max(habits[index].streak - 1, 0)
+            removeCompletion(at: index)
         } else if !wasDone && isDone {
-            StarProgress.awardPoints(StarProgress.pointsPerHabit)
-            habits[index].previousCompletedDate = old.lastCompletedDate
-            habits[index].lastCompletedDate = .now
-            habits[index].completedDays = min(habits[index].completedDays + 1, habits[index].durationDays)
-            habits[index].streakCount = habits[index].streak + 1
+            habits[index].lastLogDate = .now
+            addCompletion(at: index)
         }
+        recompute()
 
         // A shorter duration can finish the journey right away.
         if habits[index].isFinished && !old.isFinished {
@@ -147,9 +299,11 @@ final class HabitStore {
         habits[index].favorite = !habits[index].isFavorite
     }
 
+    // Its log entries stay, so points already earned aren't taken away.
     func delete(_ habit: Habit) {
         habits.removeAll { $0.id == habit.id }
         ReminderScheduler.cancel(habit)
+        recompute()
     }
 
     // MARK: - Logging
@@ -194,13 +348,11 @@ final class HabitStore {
     }
 
     private func completeToday(at index: Int) {
-        StarProgress.awardPoints(StarProgress.pointsPerHabit)
-        habits[index].previousCompletedDate = habits[index].lastCompletedDate
-        habits[index].lastCompletedDate = .now
-        habits[index].completedDays = min(habits[index].completedDays + 1, habits[index].durationDays)
-        habits[index].streakCount = habits[index].streak + 1
+        let wasFinished = habits[index].isFinished
+        addCompletion(at: index)
+        recompute()
 
-        if habits[index].isFinished {
+        if habits[index].isFinished && !wasFinished {
             justFinished = habits[index]
             ReminderScheduler.cancel(habits[index])
         }
@@ -208,12 +360,10 @@ final class HabitStore {
 
     private func uncompleteToday(at index: Int) {
         let wasFinished = habits[index].isFinished
-        StarProgress.removePoints(StarProgress.pointsPerHabit)
-        habits[index].lastCompletedDate = habits[index].previousCompletedDate
-        habits[index].completedDays = max(habits[index].completedDays - 1, 0)
-        habits[index].streakCount = max(habits[index].streak - 1, 0)
+        removeCompletion(at: index)
+        recompute()
 
-        if wasFinished {
+        if wasFinished && !habits[index].isFinished {
             let habit = habits[index]
             Task { await ReminderScheduler.schedule(habit) }
         }
@@ -225,6 +375,7 @@ final class HabitStore {
     // resets today's counters and asks about any missed habit again.
     func checkForNewDay() {
         resetCountsIfNewDay()
+        recompute()
         skippedMissedIDs = []
         showNextMissed()
     }
@@ -271,14 +422,15 @@ final class HabitStore {
 
     // The streak saver can be used once per calendar month.
     var canUseSaver: Bool {
-        guard let last = UserDefaults.standard.object(forKey: saverKey) as? Date else { return true }
+        guard let last = defaults.object(forKey: saverKey) as? Date else { return true }
         return !Calendar.current.isDate(last, equalTo: .now, toGranularity: .month)
     }
 
     // "Use this month's chance": keep the progress and forgive the missed day.
     func useSaver(_ habit: Habit) {
         guard canUseSaver else { return }
-        UserDefaults.standard.set(Date.now, forKey: saverKey)
+        if canPersist { defaults.set(Date.now, forKey: saverKey) }
+        forgiveMissedDays(of: habit)
         resolveMissed(habit, resetProgress: false)
     }
 
@@ -292,39 +444,74 @@ final class HabitStore {
         // Mark everything up to yesterday as handled.
         habits[index].lastResolvedDate = Calendar.current.date(byAdding: .day, value: -1, to: .now)
         if resetProgress {
-            habits[index].completedDays = 0
-            habits[index].streakCount = 0
+            // The journey starts again today; earlier log entries (and their points) stay.
+            habits[index].journeyStartDate = Calendar.current.startOfDay(for: .now)
+            habits[index].baselineCompletedDays = 0
         }
+        recompute()
         // The next missed habit (if any) is shown after this page closes; see RootView.
+    }
+
+    // The saver forgives the missed due days (up to yesterday), so they don't break the
+    // streak. It is still limited to once per month by canUseSaver.
+    private func forgiveMissedDays(of habit: Habit) {
+        let calendar = Calendar.current
+        let line = timeline(for: habit)
+        let lastHandled = [habit.createdAt, habit.lastCompletedDate, habit.lastResolvedDate]
+            .compactMap { $0 }.max() ?? .now
+        guard var day = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: lastHandled)) else { return }
+        let today = calendar.startOfDay(for: .now)
+        while day < today {
+            let key = DayKey.key(for: day)
+            if line.isDue(day, key: key) && !line.isCompleted(key) && !line.isForgiven(key) {
+                log.forgiven.append(ForgivenDay(habitID: habit.id, day: key))
+            }
+            guard let next = calendar.date(byAdding: .day, value: 1, to: day) else { break }
+            day = next
+        }
+        saveLog()
     }
 
     // MARK: - Saving
 
     private func save() {
         if let data = try? JSONEncoder().encode(habits) {
-            UserDefaults.standard.set(data, forKey: storageKey)
+            defaults.set(data, forKey: storageKey)
         }
     }
 
-    private func load() {
-        guard let data = UserDefaults.standard.data(forKey: storageKey),
-              var saved = try? JSONDecoder().decode([Habit].self, from: data) else { return }
+    private func saveLog() {
+        guard canPersist, let data = try? JSONEncoder().encode(log) else { return }
+        defaults.set(data, forKey: logKey)
+    }
+
+    private func loadHabits() -> [Habit] {
+        guard let data = defaults.data(forKey: storageKey),
+              var saved = try? JSONDecoder().decode([Habit].self, from: data) else { return [] }
         // Habits saved before missed-day tracking existed start counting from now.
         for index in saved.indices where saved[index].createdAt == nil {
             saved[index].createdAt = .now
         }
-        habits = saved
+        return saved
+    }
+
+    private func loadLog() -> HabitLog {
+        guard let data = defaults.data(forKey: logKey),
+              let saved = try? JSONDecoder().decode(HabitLog.self, from: data) else { return HabitLog() }
+        return saved
     }
 
     static let samples: [Habit] = [
         Habit(name: "قراءة ١٠ صفحات", icon: "book", days: Set(0...6), reminderEnabled: false,
               reminderTime: .now, durationDays: 21, dailyGoal: 1, completedDays: 4,
-              favorite: true, streakCount: 4),
+              favorite: true, streakCount: 4, baselineCompletedDays: 4, isDemo: true),
         Habit(name: "شرب الماء", icon: "waterbottle.fill", days: Set(0...6), reminderEnabled: false,
-              reminderTime: .now, durationDays: 14, dailyGoal: 15, completedDays: 5, streakCount: 5),
+              reminderTime: .now, durationDays: 14, dailyGoal: 15, completedDays: 5, streakCount: 5,
+              baselineCompletedDays: 5, isDemo: true),
         Habit(name: "مشي ٢٠ دقيقة", icon: "figure.walk", days: Set(0...6), reminderEnabled: false,
               reminderTime: .now, durationDays: 7, dailyGoal: 1, todayCount: 1, completedDays: 3,
-              lastLogDate: .now, lastCompletedDate: .now, streakCount: 3)
+              lastLogDate: .now, lastCompletedDate: .now, streakCount: 3,
+              baselineCompletedDays: 3, isDemo: true)
     ]
 }
 
