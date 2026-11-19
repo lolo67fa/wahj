@@ -1,174 +1,264 @@
 import SwiftUI
 
+// صفحة الرحلة المشتركة: النجمة اللي نكملها سوا، الأعضاء وتقدمهم وستريكهم الحقيقي،
+// والدعوات اللي ما انقبلت بعد.
 struct FriendsListView: View {
-    // الالوان
-    let background = AppTheme.background
-    let card = AppTheme.surface
-    let pink = AppTheme.accent
-    let yellow = Color(red: 0.96, green: 0.85, blue: 0.54)
+    let state: JourneyState
+    let allStates: [JourneyState]
+    @Binding var selectedTab: Int
+    var onSelectJourney: (String) -> Void = { _ in }
+    var onStartNew: () -> Void = {}
 
-    // اسم النجمة جاي من FriendsTab
-    @Binding var sharedStar: String
-    // الصفحات المفتوحة، نضيف لها عشان ننتقل
-    @Binding var path: [String]
+    @Environment(JourneyService.self) private var service
 
-    // نفتح نافذة المشاركة او لا
-    @State var showInvite = false
+    @State private var pendingInvites: [InviteSummary] = []
+    @State private var shareInvite: InviteSummary?
+    @State private var isInviting = false
+    @State private var confirmLeave = false
+    @State private var errorMessage: String?
 
-    // الصديقات: الاسم وعدد الايام
-    let friends = [
-        ("سارة", "١٢ يوم"),
-        ("ريم", "٣ أيام"),
-        ("نورة", "يومين")
-    ]
+    private var starName: String {
+        StarProgress.names[min(max(state.journey.constellationIndex, 0), StarProgress.names.count - 1)]
+    }
 
     var body: some View {
         ZStack {
-            background.ignoresSafeArea()
+            SpaceBackground()
 
-            VStack(alignment: .leading, spacing: 16) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    header
+                    starCard
 
-                Text("الأصدقاء")
-                    .font(.title.bold())
-
-                // بطاقة النجمة اللي نكملها سوا
-                VStack(alignment: .leading) {
-                    Text("نجمتنا سوا · \(sharedStar)")
+                    Text("صديقاتك")
                         .font(.footnote.bold())
-                    Spacer()
-                    FriendsConstellationView()
-                        .frame(maxWidth: .infinity)
-                    Spacer()
-                }
-                .padding()
-                .frame(height: 170)
-                .background(card)
-                .clipShape(RoundedRectangle(cornerRadius: 24))
+                        .foregroundStyle(AppTheme.textSecondary)
 
-                Text("صديقاتك")
-                    .font(.footnote.bold())
-
-                // صف لكل صديقة
-                ForEach(friends, id: \.0) { friend in
-                    HStack {
-                        // اول حرف من الاسم داخل دائرة
-                        Text(String(friend.0.prefix(1)))
-                            .frame(width: 36, height: 36)
-                            .background(background)
-                            .clipShape(Circle())
-                        Text(friend.0)
-                            .bold()
-                        Spacer()
-                        // عدد الايام
-                        Text("🔥 " + friend.1)
-                            .font(.footnote.bold())
-                            .foregroundStyle(yellow)
+                    // صف لكل عضوة
+                    ForEach(state.members) { member in
+                        memberRow(member)
                     }
-                    .padding(12)
-                    .background(card)
-                    .clipShape(Capsule())
-                }
 
-                Spacer()
+                    if !pendingInvites.isEmpty {
+                        Text("دعوات ما انقبلت بعد")
+                            .font(.footnote.bold())
+                            .foregroundStyle(AppTheme.textSecondary)
+                            .padding(.top, 4)
+                        ForEach(pendingInvites) { invite in
+                            inviteRow(invite)
+                        }
+                    }
 
-                // زر الدعوة يفتح نافذة المشاركة
-                Button {
-                    showInvite = true
-                } label: {
-                    Text("+ دعوة صديقة للانضمام")
-                        .bold()
+                    // دعوة صديقة لنفس الرحلة
+                    Button(action: inviteFriend) {
+                        HStack {
+                            if isInviting { ProgressView().tint(AppTheme.text) }
+                            Text("+ دعوة صديقة للانضمام").bold()
+                        }
                         .foregroundStyle(AppTheme.text)
                         .frame(maxWidth: .infinity)
-                        .padding()
+                        .frame(height: 52)
                         .overlay(
                             // اطار منقط
-                            Capsule().stroke(style: StrokeStyle(lineWidth: 1, dash: [6]))
+                            Capsule().stroke(AppTheme.accent.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: [6]))
                         )
-                }
-                // نافذة المشاركة حقت ابل
-                .sheet(isPresented: $showInvite) {
-                    ShareSheet(items: [InviteItem(text: "تعالي نبدأ عادة سوا في وَهج ✨",
-                                                  url: URL(string: "wahaj://invite")!)]) { _ in
-                        showInvite = false
                     }
-                    .presentationDetents([.medium, .large])
-                }
+                    .disabled(isInviting)
+                    .padding(.top, 8)
 
-                // ينقلنا لصفحة اختيار العادة
-                Button {
-                    path.append("habit")
-                } label: {
-                    Text("ابدأ عادة مع صديق")
-                        .bold()
-                        .foregroundStyle(AppTheme.onAccent)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(pink)
-                        .clipShape(Capsule())
+                    // رحلة جديدة مع صديقة
+                    Button(action: onStartNew) {
+                        Text("ابدأ عادة مع صديق")
+                            .bold()
+                            .foregroundStyle(AppTheme.onAccent)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                            .background(AppTheme.accent, in: Capsule())
+                    }
                 }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 16)
             }
-            .padding()
-            .foregroundStyle(AppTheme.text)
+            .scrollIndicators(.hidden)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                BottomTabBar(selected: $selectedTab)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 8)
+            }
         }
         // الصفحة من اليمين لليسار
         .environment(\.layoutDirection, .rightToLeft)
-    }
-}
-
-// رسمة النجمة المشتركة
-struct FriendsConstellationView: View {
-    // اماكن النجوم
-    let points = [
-        CGPoint(x: 30, y: 20),
-        CGPoint(x: 90, y: 80),
-        CGPoint(x: 150, y: 35),
-        CGPoint(x: 210, y: 80),
-        CGPoint(x: 270, y: 30)
-    ]
-    // كم نجمة انضاءت
-    let done = 2
-
-    var body: some View {
-        ZStack {
-            // خط منقط على كل النجوم
-            Path { path in
-                path.addLines(points)
-            }
-            .stroke(Color.white.opacity(0.6),
-                    style: StrokeStyle(lineWidth: 2, dash: [5]))
-
-            // خط ابيض بين النجوم اللي انضاءت بس
-            Path { path in
-                path.addLines(Array(points.prefix(done)))
-            }
-            .stroke(Color.white, lineWidth: 3)
-
-            ForEach(0..<points.count, id: \.self) { i in
-                if i < done {
-                    // نجمة مضيئة
-                    Image(systemName: "sparkle")
-                        .foregroundStyle(Color(red: 1.0, green: 0.85, blue: 0.30))
-                        .padding(8)
-                        .background(Color(red: 1.0, green: 0.85, blue: 0.30).opacity(0.25))
-                        .clipShape(Circle())
-                        .position(points[i])
-                } else {
-                    // نجمة باقي ما انضاءت
-                    Circle()
-                        .fill(.white)
-                        .frame(width: 8, height: 8)
-                        .position(points[i])
+        .task(id: state.id) { await loadInvites() }
+        // نافذة المشاركة حقت ابل
+        .sheet(item: $shareInvite, onDismiss: { Task { await loadInvites() } }) { invite in
+            ShareSheet(items: [InviteItem(invite: invite)]) { _ in shareInvite = nil }
+                .presentationDetents([.medium, .large])
+        }
+        .confirmationDialog("مغادرة الرحلة؟", isPresented: $confirmLeave, titleVisibility: .visible) {
+            Button("مغادرة الرحلة", role: .destructive) {
+                Task {
+                    do { try await service.leave(state.id) } catch { errorMessage = error.localizedDescription }
                 }
             }
+        } message: {
+            Text("تبقى إنجازاتك السابقة في الرحلة، وتبقى عادتك عندك بدون مشاركة.")
         }
-        .frame(width: 300, height: 100)
-        // عشان الرسمة ما تنقلب
-        .environment(\.layoutDirection, .leftToRight)
+        .alert("صار خطأ", isPresented: Binding(
+            get: { errorMessage != nil },
+            set: { if !$0 { errorMessage = nil } }
+        )) {
+            Button("تمام", role: .cancel) {}
+        } message: {
+            Text(errorMessage ?? "")
+        }
     }
-}
 
-#Preview {
-    NavigationStack {
-        FriendsListView(sharedStar: .constant("ذات الكرسي"), path: .constant([]))
+    // MARK: - Parts
+
+    private var header: some View {
+        HStack {
+            Text("الأصدقاء")
+                .font(.title.bold())
+                .foregroundStyle(AppTheme.text)
+            Spacer()
+            Menu {
+                if allStates.count > 1 {
+                    ForEach(allStates) { other in
+                        Button(other.journey.habitTitle) { onSelectJourney(other.id) }
+                    }
+                    Divider()
+                }
+                Button("مغادرة الرحلة", systemImage: "rectangle.portrait.and.arrow.right", role: .destructive) {
+                    confirmLeave = true
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.title3)
+                    .foregroundStyle(AppTheme.accent)
+                    .frame(width: 44, height: 44)
+            }
+            .accessibilityLabel("خيارات الرحلة")
+        }
+        .padding(.top, 12)
+    }
+
+    // بطاقة النجمة اللي نكملها سوا
+    private var starCard: some View {
+        ZStack {
+            ConstellationCardBackground(seed: state.journey.constellationIndex)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("نجمتنا سوا · \(starName)")
+                    .font(.footnote.bold())
+                    .foregroundStyle(AppTheme.text)
+
+                ConstellationDrawing(
+                    index: state.journey.constellationIndex,
+                    progress: Double(state.points) / Double(HabitProgress.pointsPerConstellation),
+                    locked: false,
+                    lightsAlongPath: true
+                )
+                .frame(height: 120)
+                .padding(.horizontal, 24)
+
+                HStack {
+                    Label(state.journey.habitTitle, systemImage: state.journey.habitIcon)
+                        .font(.footnote)
+                        .foregroundStyle(AppTheme.textSecondary)
+                    Spacer()
+                    Text("\(arabicNumber(state.points)) / ١٠٠ نقطة")
+                        .font(.footnote.bold())
+                        .foregroundStyle(AppTheme.accent)
+                        .contentTransition(.numericText())
+                }
+            }
+            .padding(16)
+        }
+        .frame(height: 220)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(AppTheme.accent.opacity(0.25), lineWidth: 1))
+        .animation(.snappy, value: state.points)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func memberRow(_ member: JourneyMember) -> some View {
+        let isMe = member.id == service.accountID
+        return HStack(spacing: 10) {
+            // اول حرف من الاسم داخل دائرة
+            Text(String(member.displayName.prefix(1)))
+                .font(.subheadline.bold())
+                .foregroundStyle(AppTheme.text)
+                .frame(width: 36, height: 36)
+                .background(AppTheme.background, in: Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(isMe ? "\(member.displayName) (أنتِ)" : member.displayName)
+                    .bold()
+                    .foregroundStyle(AppTheme.text)
+                Text(member.active
+                     ? "ساهمت بـ \(arabicNumber(state.contribution(of: member.id))) نقطة"
+                     : "غادرت الرحلة")
+                    .font(.caption)
+                    .foregroundStyle(AppTheme.textSecondary)
+            }
+            Spacer()
+            // الستريك الحقيقي من سجل إنجازاتها
+            Text("🔥 \(arabicNumber(member.streak)) يوم")
+                .font(.footnote.bold())
+                .foregroundStyle(AppTheme.gold)
+        }
+        .padding(12)
+        .background(AppTheme.surface, in: Capsule())
+        .opacity(member.active ? 1 : 0.55)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func inviteRow(_ invite: InviteSummary) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(InviteCode.formatted(invite.code))
+                    .font(.caption.monospaced())
+                    .foregroundStyle(AppTheme.text)
+                    .environment(\.layoutDirection, .leftToRight)
+                Text("تنتهي \(invite.expiresAt.formatted(.relative(presentation: .named).locale(Locale(identifier: "ar"))))")
+                    .font(.caption2)
+                    .foregroundStyle(AppTheme.textSecondary)
+            }
+            Spacer()
+            Button("مشاركة") { shareInvite = invite }
+                .font(.caption.bold())
+                .foregroundStyle(AppTheme.accent)
+            Button("إلغاء") {
+                Task {
+                    do {
+                        try await service.revokeInvite(invite.code)
+                        await loadInvites()
+                    } catch { errorMessage = error.localizedDescription }
+                }
+            }
+            .font(.caption.bold())
+            .foregroundStyle(AppTheme.error)
+            .padding(.leading, 8)
+        }
+        .padding(12)
+        .background(AppTheme.field, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    // MARK: - Actions
+
+    private func inviteFriend() {
+        isInviting = true
+        Task {
+            defer { isInviting = false }
+            do {
+                shareInvite = try await service.createInvite(for: state.id)
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    private func loadInvites() async {
+        pendingInvites = (try? await service.activeInvites(for: state.id)) ?? []
     }
 }

@@ -116,6 +116,8 @@ struct StarMascot: View {
 struct FriendsScreen: View {
     // شريط التبويبات المشترك في التطبيق
     @Binding var selectedTab: Int
+    // إدخال رمز دعوة وصلك (لو الرابط ما فتح التطبيق)
+    @State private var isEnteringCode = false
 
     var body: some View {
         ZStack {
@@ -178,9 +180,7 @@ struct FriendsScreen: View {
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
                     .padding(.top, 32)
-                    NavigationLink {
-                        StartHabitTogetherScreen()
-                    } label: {
+                    NavigationLink(value: FriendsRoute.chooseHabit) {
                         Text("ابدأ عادة مع صديق")
                             .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(FriendsTheme.background)
@@ -203,6 +203,13 @@ struct FriendsScreen: View {
                     .frame(minHeight: 137, alignment: .topLeading)
                     .background(FriendsTheme.card, in: RoundedRectangle(cornerRadius: 24))
                     .padding(.top, 34)
+
+                    Button("عندك رمز دعوة؟") { isEnteringCode = true }
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(FriendsTheme.pink)
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: 44)
+                        .padding(.top, 12)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 24)
@@ -213,6 +220,9 @@ struct FriendsScreen: View {
                     .padding(.horizontal, 20)
                     .padding(.bottom, 8)
             }
+        }
+        .sheet(isPresented: $isEnteringCode) {
+            InviteCodeEntryView()
         }
     }
 }
@@ -274,6 +284,9 @@ struct HabitOption: Identifiable {
 }
 
 struct StartHabitTogetherScreen: View {
+    // بعد اختيار العادة: صفحة اختيار النجمة (FriendsTab)
+    var onContinue: (Habit) -> Void = { _ in }
+
     @Environment(\.dismiss) private var dismiss
     @Environment(HabitStore.self) private var store
     @State private var selectedID: UUID?
@@ -281,7 +294,8 @@ struct StartHabitTogetherScreen: View {
 
     // الخيارات هي عادات المستخدم الحالية من HabitStore.
     private var options: [HabitOption] {
-        store.habits.filter { !$0.isFinished }.map { habit in
+        // العادات المشتركة من قبل لها رحلتها، فما تظهر هنا
+        store.habits.filter { !$0.isFinished && $0.sharedJourneyID == nil }.map { habit in
             HabitOption(id: habit.id, title: habit.name, subtitle: "من عاداتك · " + Self.daysText(habit.days))
         }
     }
@@ -344,7 +358,9 @@ struct StartHabitTogetherScreen: View {
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 Button {
-                    // TODO: continue
+                    if let selectedID, let habit = store.habits.first(where: { $0.id == selectedID }) {
+                        onContinue(habit)
+                    }
                 } label: {
                     Text("المتابعة")
                         .font(.system(size: 17, weight: .semibold))
@@ -409,22 +425,16 @@ struct TogetherHabitRow: View {
 struct HabitsRootView: View {
     var selectedTab: Binding<Int> = .constant(3)
 
+    // صفحات الأصدقاء مربوطة الآن في FriendsTab (التنقل والرحلات المشتركة).
     var body: some View {
-        NavigationStack {
-            FriendsScreen(selectedTab: selectedTab)
-                #if os(iOS) || os(tvOS) || os(visionOS)
-                .toolbar(.hidden, for: .navigationBar)
-                #endif
-        }
-        .environment(\.layoutDirection, .rightToLeft)
-        .environment(\.locale, Locale(identifier: "ar"))
-        .preferredColorScheme(.dark)
+        FriendsTab(selectedTab: selectedTab)
     }
 }
 
 #Preview("الأصدقاء") {
     HabitsRootView()
         .environment(HabitStore.preview)
+        .environment(JourneyService())
 }
 
 #Preview("ابدؤوا عادة سوا") {

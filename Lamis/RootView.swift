@@ -5,6 +5,8 @@ import SwiftUI
 // and congratulates the user when a habit's journey is complete.
 struct RootView: View {
     @Environment(HabitStore.self) private var store
+    @Environment(JourneyService.self) private var journeyService
+    @Environment(InviteInbox.self) private var inviteInbox
     @State private var selectedTab = 1
     @Environment(\.scenePhase) private var scenePhase
 
@@ -20,7 +22,7 @@ struct RootView: View {
             case 2:
                 StarSelectionView(selectedTab: $selectedTab)
             default:
-                HabitsRootView(selectedTab: $selectedTab)
+                FriendsTab(selectedTab: $selectedTab)
             }
         }
         // After one missed page closes, show the next missed habit (if any).
@@ -41,9 +43,22 @@ struct RootView: View {
         } message: { habit in
             Text("أكملت رحلة \"\(habit.name)\" — \(arabicNumber(habit.durationDays)) اليوم!")
         }
+        // A friend invite (link or code) opened before or after signing in.
+        .sheet(item: Binding(
+            get: { inviteInbox.code.map(PendingInvite.init) },
+            set: { if $0 == nil { inviteInbox.clear() } }
+        )) { pending in
+            InviteAcceptView(code: pending.code, onJoined: { _ in
+                inviteInbox.clear()
+                selectedTab = 3
+            }, onClose: { inviteInbox.clear() })
+        }
         // Check for a new day / missed days whenever the app comes back to the front.
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { store.checkForNewDay() }
+            if phase == .active {
+                store.checkForNewDay()
+                journeyService.syncStreaks()
+            }
         }
         // If the app stays open past midnight, start the new day automatically.
         .task {
@@ -83,7 +98,14 @@ struct ComingSoonView: View {
     }
 }
 
+private struct PendingInvite: Identifiable {
+    let code: String
+    var id: String { code }
+}
+
 #Preview {
     RootView()
         .environment(HabitStore.preview)
+        .environment(JourneyService())
+        .environment(InviteInbox())
 }
