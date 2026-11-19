@@ -351,6 +351,7 @@ private struct EmailLoginView: View {
                 confirmPassword = ""
                 dismiss()
             } catch {
+                AuthErrorDiagnostics.log(error, operation: creatingAccount ? "createUser" : "signIn")
                 displayMessage(authenticationMessage(for: error))
             }
         }
@@ -376,6 +377,7 @@ private struct EmailLoginView: View {
                     "إذا كان البريد مرتبطًا بحساب، بتوصلك رسالة لاستعادة كلمة المرور. شيّكي البريد غير المرغوب أيضًا."
                 )
             } catch {
+                AuthErrorDiagnostics.log(error, operation: "sendPasswordReset")
                 displayMessage(authenticationMessage(for: error))
             }
         }
