@@ -14,7 +14,7 @@ struct RootView: View {
             case 1:
                 LamisView(selectedTab: $selectedTab)
             case 0:
-                ComingSoonView(title: "الرئيسية", selectedTab: $selectedTab)
+                ComingSoonView(title: "الرئيسية", selectedTab: $selectedTab, showsSettings: true)
             case 2:
                 ComingSoonView(title: "نجمتي", selectedTab: $selectedTab)
             default:
@@ -57,27 +57,44 @@ struct RootView: View {
 }
 
 // Placeholder for tabs that teammates are building.
+// The home placeholder has a settings button until Lujain's home page is connected.
 struct ComingSoonView: View {
     var title: String
     @Binding var selectedTab: Int
+    var showsSettings = false
 
     var body: some View {
-        VStack(spacing: 16) {
-            HStack {
-                Text(title)
-                    .font(.largeTitle).bold()
-                    .foregroundStyle(Theme.text)
+        NavigationStack {
+            VStack(spacing: 16) {
+                HStack {
+                    Text(title)
+                        .font(.largeTitle).bold()
+                        .foregroundStyle(Theme.text)
+                    Spacer()
+                    if showsSettings {
+                        NavigationLink {
+                            SettingsView()
+                        } label: {
+                            Image(systemName: "gearshape")
+                                .font(.title3)
+                                .foregroundStyle(Theme.pink)
+                                .frame(width: 48, height: 48)
+                                .background(Theme.card, in: Circle())
+                                .overlay(Circle().stroke(Theme.border, lineWidth: 1))
+                        }
+                        .accessibilityLabel("الإعدادات")
+                    }
+                }
                 Spacer()
+                Text("قريباً")
+                    .font(.title2)
+                    .foregroundStyle(Theme.text.opacity(0.7))
+                Spacer()
+                BottomTabBar(selected: $selectedTab)
             }
-            Spacer()
-            Text("قريباً")
-                .font(.title2)
-                .foregroundStyle(Theme.text.opacity(0.7))
-            Spacer()
-            BottomTabBar(selected: $selectedTab)
+            .padding()
+            .background { StarryBackground() }
         }
-        .padding()
-        .background { StarryBackground() }
         .environment(\.layoutDirection, .rightToLeft)
     }
 }

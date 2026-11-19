@@ -25,7 +25,7 @@ enum Appearance: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .system: "تلقائي"
+        case .system: "حسب الجهاز"
         case .light:  "فاتح"
         case .dark:   "داكن"
         }

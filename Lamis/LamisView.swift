@@ -5,7 +5,6 @@ struct LamisView: View {
     @Binding var selectedTab: Int
     @State private var editingHabit: Habit?
     @State private var isAddingHabit = false
-    @AppStorage("appearance") private var appearance = Appearance.system
 
     // Today's habits: favorites (starred) first, then the rest;
     // inside each group, not-done habits come before done ones.
@@ -30,24 +29,6 @@ struct LamisView: View {
                         .font(.largeTitle).bold()
                         .foregroundStyle(Theme.text)
                     Spacer()
-
-                    // Light / dark switch.
-                    Menu {
-                        Picker("المظهر", selection: $appearance) {
-                            ForEach(Appearance.allCases, id: \.self) { option in
-                                Label(option.title, systemImage: option.icon).tag(option)
-                            }
-                        }
-                    } label: {
-                        Image(systemName: appearance.icon)
-                            .font(.title3)
-                            .foregroundStyle(Theme.pink)
-                            .frame(width: 48, height: 48)
-                            .background(Theme.card, in: Circle())
-                            .overlay(Circle().stroke(Theme.border, lineWidth: 1))
-                    }
-                    .accessibilityLabel("المظهر")
-                    .accessibilityValue(appearance.title)
 
                     Button {
                         isAddingHabit = true
