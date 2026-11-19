@@ -47,13 +47,13 @@ struct AddHabitView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(editing == nil ? "أضف عادة" : "تعديل العادة")
                         .font(.largeTitle).bold()
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.text)
                         .padding(.bottom, 8)
 
                     sectionTitle("اسم العادة")
-                    TextField("", text: $habitName, prompt: Text("قراءة ١٠ صفحات").foregroundStyle(.white.opacity(0.5)))
+                    TextField("", text: $habitName, prompt: Text("قراءة ١٠ صفحات").foregroundStyle(Theme.text.opacity(0.5)))
                         .padding(16)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.text)
                         .tint(Theme.pink)
                         .background(Theme.card, in: RoundedRectangle(cornerRadius: 20))
                         .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.border, lineWidth: 1))
@@ -91,7 +91,7 @@ struct AddHabitView: View {
     private func sectionTitle(_ text: String) -> some View {
         Text(text)
             .font(.headline)
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.text)
             .padding(.top, 8)
     }
 
@@ -104,7 +104,7 @@ struct AddHabitView: View {
                 } label: {
                     Image(systemName: icon)
                         .font(.title3)
-                        .foregroundStyle(isSelected ? Theme.pink : Color.white)
+                        .foregroundStyle(isSelected ? Theme.pink : Theme.text)
                         .frame(width: 64, height: 64)
                         .background(isSelected ? Theme.cream : Theme.card, in: RoundedRectangle(cornerRadius: 18))
                 }
@@ -123,7 +123,7 @@ struct AddHabitView: View {
                 } label: {
                     Text(dayLetters[index])
                         .font(.headline)
-                        .foregroundStyle(isSelected ? Theme.bg : Theme.pink)
+                        .foregroundStyle(isSelected ? Theme.onAccent : Theme.pink)
                         .frame(maxWidth: .infinity)
                         .frame(height: 54)
                         .background(isSelected ? Theme.pink : Color.clear, in: RoundedRectangle(cornerRadius: 14))
@@ -151,7 +151,6 @@ struct AddHabitView: View {
         .padding(16)
         .background(Theme.card, in: RoundedRectangle(cornerRadius: 20))
         .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.border, lineWidth: 1))
-        .environment(\.colorScheme, .dark)
     }
 
     // A "+  value  −" row used for both the daily goal and the duration.
@@ -162,7 +161,7 @@ struct AddHabitView: View {
             } label: {
                 Image(systemName: "plus")
                     .font(.headline)
-                    .foregroundStyle(Theme.bg)
+                    .foregroundStyle(Theme.onAccent)
                     .frame(width: 48, height: 48)
                     .background(Theme.pink, in: Circle())
             }
@@ -171,7 +170,7 @@ struct AddHabitView: View {
             Spacer()
             Text(label(value.wrappedValue))
                 .font(.title3).bold()
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
                 .contentTransition(.numericText())
             Spacer()
 
@@ -180,9 +179,9 @@ struct AddHabitView: View {
             } label: {
                 Image(systemName: "minus")
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                     .frame(width: 48, height: 48)
-                    .overlay(Circle().stroke(.white, lineWidth: 1.5))
+                    .overlay(Circle().stroke(Theme.text, lineWidth: 1.5))
             }
             .accessibilityLabel("إنقاص")
         }

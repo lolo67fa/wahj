@@ -20,7 +20,7 @@ struct BottomTabBar: View {
                         .frame(width: 26, height: 26)
                     Text(items[i].title).font(.caption2)
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
                 .background(selected == i ? Theme.tabActive : Color.clear, in: Capsule())
