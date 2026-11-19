@@ -85,7 +85,8 @@ final class HabitStore {
     @ObservationIgnored var completionObserver: ((Habit, String, Bool) -> Void)?
 
     // The name chosen during onboarding, for this account.
-    var displayName: String { defaults.string(forKey: "displayName") ?? "" }
+    // Empty once signed out, so the previous account's name never shows.
+    var displayName: String { canPersist ? defaults.string(forKey: "displayName") ?? "" : "" }
 
     // The habit to show on the "missed habit" screen, if any.
     var missedHabit: Habit?
@@ -135,6 +136,9 @@ final class HabitStore {
         skippedMissedIDs = []
 
         guard let newAccountID else {
+            // Signed out: nothing of the previous account stays in memory.
+            // Its saved data stays in its own defaults for the next sign-in.
+            defaults = .standard
             recompute()
             return
         }
