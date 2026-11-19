@@ -178,28 +178,7 @@ struct LineShape: Shape {
     }
 }
 
-// Decorative orbit ring
-struct OrbitRings: View {
-    let rotation: Double
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
-
-            Ellipse()
-                .stroke(Color.white.opacity(0.18), lineWidth: 1)
-                .frame(width: 340, height: 130)
-                .rotationEffect(.degrees(-12 + rotation))
-
-            Circle()
-                .fill(Color.white.opacity(0.35))
-                .frame(width: 6, height: 6)
-                .offset(x: -160)
-                .rotationEffect(.degrees(rotation))
-        }
-    }
-}
+// OrbitRings is shared with Lamis/MissedHabitView.swift
 
 //  Button press
 struct PressScaleStyle: ButtonStyle {

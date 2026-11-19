@@ -18,9 +18,13 @@ struct tawhjApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self)
     var delegate
 
+    // مصدر بيانات واحد للعادات تستخدمه كل الصفحات.
+    @State private var habitStore = HabitStore()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(habitStore)
         }
     }
 }

@@ -1,20 +1,20 @@
 import SwiftUI
 
-struct ContentView: View {
-    @State private var days = SampleDashboardData.days
+struct HomeView: View {
+    @Environment(HabitStore.self) private var store
+    @Binding var selectedTab: Int
+
+    // الاسم من صفحة «وش حاب نناديك؟» والنقاط من StarProgress
+    @AppStorage("displayName") private var displayName = ""
+    @AppStorage("starTotalPoints") private var totalPoints = 0
+
     @State private var selectedDayID: String
     @State private var isShowingStarCompletion = false
     @State private var isShowingStars = false
 
-    init() {
-        let days = SampleDashboardData.days
-        let todayID = Self.dayID(for: Date())
-
-        _selectedDayID = State(
-            initialValue: days.first { $0.id == todayID }?.id
-                ?? days.first?.id
-                ?? ""
-        )
+    init(selectedTab: Binding<Int> = .constant(0)) {
+        _selectedTab = selectedTab
+        _selectedDayID = State(initialValue: Self.dayID(for: Date()))
     }
 
     private static func dayID(for date: Date) -> String {
@@ -27,34 +27,67 @@ struct ContentView: View {
 
     // MARK: - Derived state
 
-    private var selectedDayIndex: Int? {
-        days.firstIndex { $0.id == selectedDayID }
+    // The current week (Saturday ... Friday), built from the shared habits.
+    private var days: [DailyDashboard] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        let todayIndex = Habit.dayIndex(of: today)
+        guard let saturday = calendar.date(byAdding: .day, value: -todayIndex, to: today) else { return [] }
+
+        return (0..<7).compactMap { offset in
+            calendar.date(byAdding: .day, value: offset, to: saturday).map { dashboard(for: $0) }
+        }
     }
 
-    private var selectedDay: DailyDashboard? {
-        selectedDayIndex.map { days[$0] }
-    }
+    private func dashboard(for date: Date) -> DailyDashboard {
+        let calendar = Calendar.current
+        let isToday = calendar.isDateInToday(date)
+        let dayIndex = Habit.dayIndex(of: date)
 
-    private var selectedHabits: Binding<[Habit]> {
-        Binding(
-            get: {
-                guard let index = selectedDayIndex else { return [] }
-                return days[index].habits
-            },
-            set: { newValue in
-                guard let index = selectedDayIndex else { return }
-                days[index].habits = newValue
+        let habits = store.habits
+            .filter { $0.days.contains(dayIndex) && !$0.isFinished }
+            .map { habit in
+                DashboardHabit(
+                    id: habit.id.uuidString,
+                    title: habit.name,
+                    points: StarProgress.pointsPerHabit,
+                    isDone: isToday
+                        ? habit.isDoneToday
+                        : habit.lastCompletedDate.map { calendar.isDate($0, inSameDayAs: date) } ?? false
+                )
             }
+
+        let hour = calendar.component(.hour, from: .now)
+        let greeting = hour < 12 ? "صباح الخير" : "مساء الخير"
+        let dayLetters = ["س", "ح", "ن", "ث", "ر", "خ", "ج"]
+
+        return DailyDashboard(
+            id: Self.dayID(for: date),
+            weekdaySymbol: dayLetters[dayIndex],
+            dayNumber: arabicNumber(calendar.component(.day, from: date)),
+            greeting: displayName.isEmpty ? greeting : "\(greeting)، \(displayName)",
+            dateText: date.formatted(
+                .dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "ar"))
+            ),
+            streakDays: store.habits.map(\.streak).max() ?? 0,
+            goalPoints: habits.count * StarProgress.pointsPerHabit,
+            habits: habits
         )
     }
 
-    private var constellationProgress: ConstellationProgress {
-        let totalPoints = days
-            .flatMap(\.habits)
-            .filter(\.isDone)
-            .reduce(0) { $0 + $1.points }
+    private var selectedDay: DailyDashboard? {
+        days.first { $0.id == selectedDayID }
+    }
 
-        return ConstellationProgress(totalPoints: totalPoints)
+    // Only today's habits can be marked done from the home page.
+    private func toggle(_ row: DashboardHabit) {
+        guard selectedDayID == Self.dayID(for: Date()),
+              let habit = store.habits.first(where: { $0.id.uuidString == row.id }) else { return }
+        store.toggleDone(habit)
+    }
+
+    private var constellationProgress: ConstellationProgress {
+        ConstellationProgress(totalPoints: totalPoints)
     }
 
     // MARK: - Body
@@ -118,7 +151,7 @@ struct ContentView: View {
                 .environment(\.layoutDirection, .rightToLeft)
 
             ScrollView {
-                HabitsSection(habits: selectedHabits)
+                HabitsSection(habits: day.habits, onToggle: toggle)
                     .padding(.horizontal, -20)
                     .padding(.bottom, 24)
                     .environment(\.layoutDirection, .rightToLeft)
@@ -129,7 +162,7 @@ struct ContentView: View {
         .padding(.horizontal, 20)
         .padding(.top, 25)
         .safeAreaInset(edge: .bottom) {
-            BottomTabBar()
+            BottomTabBar(selected: $selectedTab)
                 .environment(\.layoutDirection, .rightToLeft)
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -178,5 +211,6 @@ struct DashboardHeader: View {
 }
 
 #Preview {
-    ContentView()
+    HomeView()
+        .environment(HabitStore.preview)
 }

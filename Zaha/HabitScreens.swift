@@ -3,7 +3,7 @@ import SwiftUI
 
 // MARK: - Theme
 
-enum Theme {
+enum FriendsTheme {
     static let background = color(51, 32, 63)
     static let card = color(75, 47, 92)
     static let cardSoft = color(70, 51, 82)
@@ -21,7 +21,7 @@ enum Theme {
 
 struct AppBackground: View {
     var body: some View {
-        Theme.background.ignoresSafeArea()
+        FriendsTheme.background.ignoresSafeArea()
     }
 }
 
@@ -62,7 +62,7 @@ struct StarMascot: View {
                 .overlay {
                     StarShape().stroke(Color(red: 0.87, green: 0.69, blue: 0.35), lineWidth: 1)
                 }
-                .shadow(color: Theme.yellow.opacity(0.28), radius: 10)
+                .shadow(color: FriendsTheme.yellow.opacity(0.28), radius: 10)
 
             HStack(spacing: 65) {
                 Image(systemName: "heart.fill").rotationEffect(.degrees(-32))
@@ -117,6 +117,9 @@ struct StarMascot: View {
 // MARK: - Screen 1: الأصدقاء
 
 struct FriendsScreen: View {
+    // شريط التبويبات المشترك في التطبيق
+    @Binding var selectedTab: Int
+
     var body: some View {
         ZStack {
             AppBackground()
@@ -127,26 +130,26 @@ struct FriendsScreen: View {
                             .font(.system(size: 28, weight: .bold))
                         Text("رحلة صغيرة… ونور يجمعكم")
                             .font(.system(size: 15))
-                            .foregroundStyle(Theme.subtle)
+                            .foregroundStyle(FriendsTheme.subtle)
                     }
-                    .foregroundStyle(Theme.text)
+                    .foregroundStyle(FriendsTheme.text)
                     .padding(.top, 12)
                     // Hero card
                     RoundedRectangle(cornerRadius: 30)
-                        .fill(Theme.hero)
+                        .fill(FriendsTheme.hero)
                         .aspectRatio(2.19, contentMode: .fit)
                         .overlay {
                             ZStack {
-                                Circle().stroke(Theme.background.opacity(0.26), lineWidth: 1)
+                                Circle().stroke(FriendsTheme.background.opacity(0.26), lineWidth: 1)
                                     .frame(width: 226, height: 226)
-                                Circle().stroke(Theme.background.opacity(0.26), lineWidth: 1)
+                                Circle().stroke(FriendsTheme.background.opacity(0.26), lineWidth: 1)
                                     .frame(width: 266, height: 266)
                             }
                             .offset(x: 20)
                         }
                         .overlay(alignment: .bottomTrailing) {
                             Circle()
-                                .fill(Theme.pink)
+                                .fill(FriendsTheme.pink)
                                 .frame(width: 300, height: 300)
                                 .offset(x: -108, y: 215)
                         }
@@ -154,14 +157,14 @@ struct FriendsScreen: View {
                         .overlay(alignment: .topLeading) {
                             Image(systemName: "sparkle")
                                 .font(.system(size: 11))
-                                .foregroundStyle(Theme.yellow)
+                                .foregroundStyle(FriendsTheme.yellow)
                                 .padding(.top, 41)
                                 .padding(.leading, 25)
                         }
                         .overlay(alignment: .bottomTrailing) {
                             Image(systemName: "sparkle")
                                 .font(.system(size: 8))
-                                .foregroundStyle(Theme.yellow)
+                                .foregroundStyle(FriendsTheme.yellow)
                                 .padding(.bottom, 30)
                                 .padding(.trailing, 38)
                         }
@@ -170,10 +173,10 @@ struct FriendsScreen: View {
                     VStack(spacing: 10) {
                         Text("مع بعض، العادة أحلى")
                             .font(.system(size: 26, weight: .bold))
-                            .foregroundStyle(Theme.text)
+                            .foregroundStyle(FriendsTheme.text)
                         Text("عادة واحدة، أنت وصديقك، ونجمة تطوّرونها سوا.")
                             .font(.system(size: 15))
-                            .foregroundStyle(Theme.subtle)
+                            .foregroundStyle(FriendsTheme.subtle)
                     }
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
@@ -183,25 +186,25 @@ struct FriendsScreen: View {
                     } label: {
                         Text("ابدأ عادة مع صديق")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(Theme.background)
+                            .foregroundStyle(FriendsTheme.background)
                             .frame(maxWidth: .infinity)
                             .frame(minHeight: 52)
-                            .background(Theme.pink, in: Capsule())
+                            .background(FriendsTheme.pink, in: Capsule())
                     }
                     .padding(.top, 42)
                     VStack(alignment: .leading, spacing: 8) {
                         Text("لكل عادة رحلتها")
                             .font(.system(size: 17, weight: .bold))
-                            .foregroundStyle(Theme.yellow)
+                            .foregroundStyle(FriendsTheme.yellow)
                         Text("تقدرين تبدئين المذاكرة مع صديق آخر.\nكل رحلة لها عادة وجدول ورصيد مستقل.")
                             .font(.system(size: 14))
-                            .foregroundStyle(Theme.subtle)
+                            .foregroundStyle(FriendsTheme.subtle)
                             .lineSpacing(3)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
                     .frame(minHeight: 137, alignment: .topLeading)
-                    .background(Theme.card, in: RoundedRectangle(cornerRadius: 24))
+                    .background(FriendsTheme.card, in: RoundedRectangle(cornerRadius: 24))
                     .padding(.top, 34)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -209,7 +212,9 @@ struct FriendsScreen: View {
                 .padding(.bottom, 16)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                AppTabBar(selected: .friends)
+                BottomTabBar(selected: $selectedTab)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 8)
             }
         }
     }
@@ -245,19 +250,19 @@ struct AppTabBar: View {
                 VStack(spacing: 4) {
                     Image(systemName: tab.icon)
                         .font(.system(size: 20))
-                        .foregroundStyle(tab == selected ? Theme.pink : Theme.text)
+                        .foregroundStyle(tab == selected ? FriendsTheme.pink : FriendsTheme.text)
                     Text(tab.title).font(.system(size: 11, weight: .medium))
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 54)
-                .background(tab == selected ? Theme.purple : Color.clear,
+                .background(tab == selected ? FriendsTheme.purple : Color.clear,
                             in: Capsule())
             }
         }
         .padding(4)
-        .background(Theme.cardSoft, in: Capsule())
-        .overlay { Capsule().strokeBorder(Theme.subtle.opacity(0.35), lineWidth: 0.75) }
+        .background(FriendsTheme.cardSoft, in: Capsule())
+        .overlay { Capsule().strokeBorder(FriendsTheme.subtle.opacity(0.35), lineWidth: 0.75) }
         .padding(.horizontal, 20)
         .padding(.bottom, 8)
     }
@@ -266,18 +271,29 @@ struct AppTabBar: View {
 // MARK: - Screen 2: ابدؤوا عادة سوا
 
 struct HabitOption: Identifiable {
-    let id = UUID()
+    var id = UUID()
     let title: String
     let subtitle: String
 }
 
 struct StartHabitTogetherScreen: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var options = [
-        HabitOption(title: "المشي", subtitle: "من عاداتك · يوميًا · تُربط بدون تكرار"),
-        HabitOption(title: "القراءة", subtitle: "من عاداتك · يوميًا")
-    ]
+    @Environment(HabitStore.self) private var store
     @State private var selectedID: UUID?
+    @State private var isAddingHabit = false
+
+    // الخيارات هي عادات المستخدم الحالية من HabitStore.
+    private var options: [HabitOption] {
+        store.habits.filter { !$0.isFinished }.map { habit in
+            HabitOption(id: habit.id, title: habit.name, subtitle: "من عاداتك · " + Self.daysText(habit.days))
+        }
+    }
+
+    private static func daysText(_ days: Set<Int>) -> String {
+        if days.count == 7 { return "يوميًا" }
+        let names = ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"]
+        return days.sorted().map { names[$0] }.joined(separator: "، ")
+    }
     var body: some View {
         ZStack {
             AppBackground()
@@ -303,25 +319,25 @@ struct StartHabitTogetherScreen: View {
                         .padding(.top, 36)
                     Text("اختاري عادة واحدة")
                         .font(.system(size: 15))
-                        .foregroundStyle(Theme.subtle)
+                        .foregroundStyle(FriendsTheme.subtle)
                         .padding(.top, 32)
                         .padding(.bottom, 14)
                     VStack(spacing: 14) {
                         ForEach(options) { option in
-                            HabitRow(option: option, isSelected: option.id == selectedID) {
+                            TogetherHabitRow(option: option, isSelected: option.id == selectedID) {
                                 selectedID = option.id
                             }
                         }
                     }
                     Button {
-                        // TODO: present add-habit sheet
+                        isAddingHabit = true
                     } label: {
                         Text("أضيفي عادة جديدة")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 54)
-                            .background(Theme.card.opacity(0.85), in: Capsule())
+                            .background(FriendsTheme.card.opacity(0.85), in: Capsule())
                     }
                     .padding(.top, 22)
                 }
@@ -338,7 +354,7 @@ struct StartHabitTogetherScreen: View {
                         .foregroundStyle(Color(red: 0.2, green: 0.1, blue: 0.3))
                         .frame(maxWidth: .infinity)
                         .frame(height: 58)
-                        .background(selectedID == nil ? Theme.pink.opacity(0.55) : Theme.pink,
+                        .background(selectedID == nil ? FriendsTheme.pink.opacity(0.55) : FriendsTheme.pink,
                                     in: Capsule())
                 }
                 .disabled(selectedID == nil)
@@ -349,10 +365,13 @@ struct StartHabitTogetherScreen: View {
         #if os(iOS) || os(tvOS) || os(visionOS)
         .toolbar(.hidden, for: .navigationBar)
         #endif
+        .fullScreenCover(isPresented: $isAddingHabit) {
+            AddHabitView()
+        }
     }
 }
 
-struct HabitRow: View {
+struct TogetherHabitRow: View {
     let option: HabitOption
     let isSelected: Bool
     let action: () -> Void
@@ -364,13 +383,13 @@ struct HabitRow: View {
                         .font(.system(size: 18, weight: .bold))
                     Text(option.subtitle)
                         .font(.system(size: 13))
-                        .foregroundStyle(Theme.subtle)
+                        .foregroundStyle(FriendsTheme.subtle)
                 }
                 Spacer()
                 ZStack {
                     Circle().stroke(.white, lineWidth: 1.5).frame(width: 28, height: 28)
                     if isSelected {
-                        Circle().fill(Theme.pink).frame(width: 16, height: 16)
+                        Circle().fill(FriendsTheme.pink).frame(width: 16, height: 16)
                     }
                 }
                 .padding(.leading, 8)
@@ -378,10 +397,10 @@ struct HabitRow: View {
             .foregroundStyle(.white)
             .padding(.horizontal, 20)
             .padding(.vertical, 18)
-            .background(Theme.card, in: RoundedRectangle(cornerRadius: 24))
+            .background(FriendsTheme.card, in: RoundedRectangle(cornerRadius: 24))
             .overlay(
                 RoundedRectangle(cornerRadius: 24)
-                    .stroke(isSelected ? Theme.pink : Color.clear, lineWidth: 1.5)
+                    .stroke(isSelected ? FriendsTheme.pink : Color.clear, lineWidth: 1.5)
             )
         }
         .buttonStyle(.plain)
@@ -391,9 +410,11 @@ struct HabitRow: View {
 // MARK: - Root (right-to-left)
 
 struct HabitsRootView: View {
+    var selectedTab: Binding<Int> = .constant(3)
+
     var body: some View {
         NavigationStack {
-            FriendsScreen()
+            FriendsScreen(selectedTab: selectedTab)
                 #if os(iOS) || os(tvOS) || os(visionOS)
                 .toolbar(.hidden, for: .navigationBar)
                 #endif
@@ -406,12 +427,14 @@ struct HabitsRootView: View {
 
 #Preview("الأصدقاء") {
     HabitsRootView()
+        .environment(HabitStore.preview)
 }
 
 #Preview("ابدؤوا عادة سوا") {
     NavigationStack {
         StartHabitTogetherScreen()
     }
+    .environment(HabitStore.preview)
     .environment(\.layoutDirection, .rightToLeft)
     .environment(\.locale, Locale(identifier: "ar"))
     .preferredColorScheme(.dark)
