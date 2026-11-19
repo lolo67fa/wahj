@@ -36,7 +36,7 @@ struct FriendsListView: View {
                     Text("نجمتنا سوا · \(sharedStar)")
                         .font(.footnote.bold())
                     Spacer()
-                    ConstellationView()
+                    FriendsConstellationView()
                         .frame(maxWidth: .infinity)
                     Spacer()
                 }
@@ -116,7 +116,7 @@ struct FriendsListView: View {
 }
 
 // رسمة النجمة المشتركة
-struct ConstellationView: View {
+struct FriendsConstellationView: View {
     // اماكن النجوم
     let points = [
         CGPoint(x: 30, y: 20),
