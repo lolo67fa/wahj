@@ -59,10 +59,10 @@ struct MissedHabitView: View {
             VStack(spacing: 8) {
                 Text("افاا فاتتك عادة")
                     .font(.system(size: 32, weight: .bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(Theme.text)
                 Text("ولا يهمك! نجمتك ما انطفت. لك مرة كل شهر ترجع الستريك")
                     .font(.body)
-                    .foregroundStyle(.white.opacity(0.75))
+                    .foregroundStyle(Theme.text.opacity(0.75))
                     .multilineTextAlignment(.center)
                 if !habitName.isEmpty {
                     Text(habitName)
@@ -100,15 +100,15 @@ struct OrbitRings: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                .stroke(Theme.text.opacity(0.12), lineWidth: 1)
 
             Ellipse()
-                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                .stroke(Theme.text.opacity(0.18), lineWidth: 1)
                 .frame(width: 340, height: 130)
                 .rotationEffect(.degrees(-12 + rotation))
 
             Circle()
-                .fill(Color.white.opacity(0.35))
+                .fill(Theme.text.opacity(0.35))
                 .frame(width: 6, height: 6)
                 .offset(x: -160)
                 .rotationEffect(.degrees(rotation))
@@ -130,7 +130,7 @@ struct ActionButton: View {
                 Text(title)
             }
             .font(.headline)
-            .foregroundStyle(isPrimary ? Theme.bg : Color.white)
+            .foregroundStyle(isPrimary ? Theme.onAccent : Theme.text)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 18)
             .background(

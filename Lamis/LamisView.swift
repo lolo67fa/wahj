@@ -5,14 +5,22 @@ struct LamisView: View {
     @Binding var selectedTab: Int
     @State private var editingHabit: Habit?
     @State private var isAddingHabit = false
+    @AppStorage("appearance") private var appearance = Appearance.system
 
-    // Today's habits: not done first, then done.
+    // Today's habits: favorites (starred) first, then the rest;
+    // inside each group, not-done habits come before done ones.
     private var todayHabits: [Habit] {
         let today = store.habits.filter { $0.isScheduledToday && !$0.isFinished }
-        return today.filter { !$0.isDoneToday } + today.filter(\.isDoneToday)
+        return favoritesFirst(today.filter { !$0.isDoneToday }) + favoritesFirst(today.filter(\.isDoneToday))
     }
-    private var otherHabits: [Habit] { store.habits.filter { !$0.isScheduledToday && !$0.isFinished } }
-    private var finishedHabits: [Habit] { store.habits.filter(\.isFinished) }
+    private var otherHabits: [Habit] {
+        favoritesFirst(store.habits.filter { !$0.isScheduledToday && !$0.isFinished })
+    }
+    private var finishedHabits: [Habit] { favoritesFirst(store.habits.filter(\.isFinished)) }
+
+    private func favoritesFirst(_ habits: [Habit]) -> [Habit] {
+        habits.filter(\.isFavorite) + habits.filter { !$0.isFavorite }
+    }
 
     var body: some View {
         NavigationStack {
@@ -20,8 +28,27 @@ struct LamisView: View {
                 HStack {
                     Text("عاداتي")
                         .font(.largeTitle).bold()
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Theme.text)
                     Spacer()
+
+                    // Light / dark switch.
+                    Menu {
+                        Picker("المظهر", selection: $appearance) {
+                            ForEach(Appearance.allCases, id: \.self) { option in
+                                Label(option.title, systemImage: option.icon).tag(option)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: appearance.icon)
+                            .font(.title3)
+                            .foregroundStyle(Theme.pink)
+                            .frame(width: 48, height: 48)
+                            .background(Theme.card, in: Circle())
+                            .overlay(Circle().stroke(Theme.border, lineWidth: 1))
+                    }
+                    .accessibilityLabel("المظهر")
+                    .accessibilityValue(appearance.title)
+
                     Button {
                         isAddingHabit = true
                     } label: {
@@ -59,6 +86,8 @@ struct LamisView: View {
                             }
                         }
                         .animation(.snappy, value: store.habits.map(\.todayCount))
+                        // Starred habits slide to the top.
+                        .animation(.snappy, value: store.habits.map(\.isFavorite))
                     }
                     .scrollIndicators(.hidden)
                 }
@@ -80,7 +109,7 @@ struct LamisView: View {
     private func sectionTitle(_ text: String) -> some View {
         Text(text)
             .font(.subheadline.bold())
-            .foregroundStyle(.white.opacity(0.6))
+            .foregroundStyle(Theme.text.opacity(0.6))
             .padding(.top, 8)
     }
 
@@ -118,9 +147,9 @@ struct LamisView: View {
                 .accessibilityHidden(true)
             Text("ابدأ أول عادة")
                 .font(.title2.bold())
-                .foregroundStyle(.white)
+                .foregroundStyle(Theme.text)
             Text("كل نجمة تبدأ بخطوة صغيرة")
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(Theme.text.opacity(0.7))
             ActionButton(title: "أضف عادة", icon: "plus", isPrimary: true) {
                 isAddingHabit = true
             }
