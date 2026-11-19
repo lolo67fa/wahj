@@ -24,6 +24,7 @@ struct BottomTabBar: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
                 .background(selected == i ? Theme.tabActive : Color.clear, in: Capsule())
+                .contentShape(Capsule())   // the whole tab is tappable, not only the icon and text
                 .onTapGesture { selected = i }
             }
         }

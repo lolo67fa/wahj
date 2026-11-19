@@ -59,9 +59,10 @@ wahj/
 ├── Lujain/           Home, first star, completed constellation
 ├── Zaha/             Friends screens
 ├── Shared/           Theme, StarryBackground, BottomTabBar
+├── tawhj/            Ghala: sign in, onboarding, star selection, Add Habit,
+│                     app entry point (tawhjApp.swift), Firebase config,
+│                     Assets.xcassets (all images and tab bar icons)
 ├── docs/screenshots/ README screenshots
-├── Assets.xcassets   Images and tab bar icons
-├── MyApp.swift       App entry point
 └── tawhj.xcodeproj   Xcode project
 ```
 
@@ -74,7 +75,9 @@ Each person works in their own folder. Files in `Shared/` are used by everyone, 
 3. Commit with a short message that starts with a verb, like `Add Missed Habit page`.
 4. `git push` at the end of each session.
 
-> **Xcode:** a new file must be added to the Xcode project, not only copied into the folder, or it will not build. There is only one `@main` file (`MyApp.swift`).
+> **Xcode:** a new file must be added to the Xcode project, not only copied into the folder, or it will not build. There is only one `@main` file (`tawhj/tawhjApp.swift`). The project uses synchronized folders, so new files inside `tawhj/`, `Shared/`, `Lamis/`, `Lujain/` or `Zaha/` are added to the target automatically.
+
+> **Habits data:** every screen reads and writes habits through the one `HabitStore` (`Lamis/HabitStore.swift`) that `tawhjApp` puts in the environment (`@Environment(HabitStore.self)`). Star points live in `StarProgress` (`tawhj/StarSelectionView.swift`).
 
 > **Screenshots:** save a PNG in `docs/screenshots/` with a lowercase name and dashes (`my-habits.png`), then add a cell to the table above.
 
