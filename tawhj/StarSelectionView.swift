@@ -302,8 +302,11 @@ struct ConstellationDrawing: View {
     // في الرئيسية يتقدم الضوء على مسار المجموعة: نجمة ثم خط ثم النجمة التالية،
     // ويضيء جزء من الخط التالي مع كل ٥ نقاط.
     var lightsAlongPath = false
+    // نبض ضوئي خفيف للنجوم المضاءة (صفحة «سمائي»). يتوقف مع Reduce Motion.
+    var pulse = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var pulsing = false
 
     private let gold = Color(
         red: 1,
@@ -312,7 +315,7 @@ struct ConstellationDrawing: View {
     )
 
     // نقاط الرسم بنسب ثابتة، وليست أشكال نجوم خماسية.
-    private var points: [CGPoint] {
+    var points: [CGPoint] {
         let coordinates: [(CGFloat, CGFloat)]
 
         switch index {
@@ -370,7 +373,8 @@ struct ConstellationDrawing: View {
         return coordinates.map { CGPoint(x: $0.0, y: $0.1) }
     }
 
-    private var edges: [(Int, Int)] {
+    // ترتيب خطوط المسار؛ الضوء يمشي عليها بالتسلسل.
+    var edges: [(Int, Int)] {
         switch index {
         case 0:
             return [
@@ -453,8 +457,9 @@ struct ConstellationDrawing: View {
                     ZStack {
                         if lit {
                             Circle()
-                                .fill(gold.opacity(0.28))
+                                .fill(gold.opacity(pulse ? (pulsing ? 0.5 : 0.22) : 0.28))
                                 .frame(width: 26, height: 26)
+                                .scaleEffect(pulse && pulsing ? 1.3 : 1)
                                 .blur(radius: 4)
 
                             Image(systemName: "sparkle")
@@ -491,6 +496,12 @@ struct ConstellationDrawing: View {
         .environment(\.layoutDirection, .leftToRight)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.8), value: progress)
         .accessibilityHidden(true)
+        .onAppear {
+            guard pulse, !reduceMotion else { return }
+            withAnimation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true)) {
+                pulsing = true
+            }
+        }
     }
 
     // MARK: - Lighting along the path
