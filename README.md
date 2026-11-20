@@ -20,20 +20,32 @@ Miss a day and your star waits for you instead of going out.
 
 <table>
   <tr>
+    <td align="center"><img src="docs/screenshots/welcome.png" width="200"><br><sub><b>Welcome</b><br>Ghala</sub></td>
+    <td align="center"><img src="docs/screenshots/appearance.png" width="200"><br><sub><b>Appearance</b><br>Ghala</sub></td>
+    <td align="center"><img src="docs/screenshots/star-selection.png" width="200"><br><sub><b>Choose Your Star</b><br>Ghala</sub></td>
+    <td align="center"><img src="docs/screenshots/habit-intro.png" width="200"><br><sub><b>How Stars Work</b><br>Ghala</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/lujain-home.png" width="200"><br><sub><b>Home</b><br>Lujain</sub></td>
+    <td align="center"><img src="docs/screenshots/lujain-my-sky.png" width="200"><br><sub><b>My Sky</b><br>Lujain</sub></td>
+    <td align="center"><img src="docs/screenshots/lujain-star-complete.png" width="200"><br><sub><b>Star Complete</b><br>Lujain</sub></td>
+    <td align="center"><img src="docs/screenshots/lujain-constellation.png" width="200"><br><sub><b>Constellation</b><br>Lujain</sub></td>
+  </tr>
+  <tr>
     <td align="center"><img src="docs/screenshots/My-Habits.png" width="200"><br><sub><b>My Habits</b><br>Lamis</sub></td>
+    <td align="center"><img src="docs/screenshots/Add-habits.png" width="200"><br><sub><b>Add Habit</b><br>Ghala & Lamis</sub></td>
     <td align="center"><img src="docs/screenshots/Missed-habit.png" width="200"><br><sub><b>Missed Habit</b><br>Lamis</sub></td>
-    <td align="center"><img src="docs/screenshots/Add-habits.png" width="200"><br><sub><b>Add Habit</b><br>Lamis</sub></td>
     <td align="center"><img src="docs/screenshots/settings.png" width="200"><br><sub><b>Settings</b><br>Lamis</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/screenshots/mays-friends-list.png" width="200"><br><sub><b>Friends</b><br>Mays</sub></td>
+    <td align="center"><img src="docs/screenshots/mays-friends.png" width="200"><br><sub><b>Friends</b><br>Mays</sub></td>
     <td align="center"><img src="docs/screenshots/mays-choose-constellation.png" width="200"><br><sub><b>Choose a Star</b><br>Mays</sub></td>
     <td align="center"><img src="docs/screenshots/zaha-friends.png" width="200"><br><sub><b>Friends Home</b><br>Zaha</sub></td>
     <td align="center"><img src="docs/screenshots/zaha-start-together.png" width="200"><br><sub><b>Start a Habit Together</b><br>Zaha</sub></td>
   </tr>
 </table>
 
-More screens are added as the team finishes them. Screenshots live in `docs/screenshots/`.
+Screenshots live in `docs/screenshots/` (taken in dark mode from each screen's Xcode preview).
 
 ## About
 
@@ -98,7 +110,7 @@ Each person works in their own folder. Files in `Shared/` are used by everyone, 
 - [Figma design](https://www.figma.com/design/mYQ0TEcEO8A8MxJhZ3nzjY/Wahj?node-id=1-1322&t=43R1Los8qkt5NdsL-1)
 - Miro board: _add the link here_
 
-Colors are Color Sets in `Assets.xcassets` (named `ThemeBg`, `ThemePink` and so on), each with a Light and a Dark version. `Shared/Theme.swift` gives them short names. Use the name (like `Theme.pink`) in code, never a hex code or `.white`, so every screen follows light and dark mode. Light colors come from Figma.
+Colors are Color Sets in `tawhj/Assets.xcassets` (named `ThemeBg`, `ThemePink` and so on), each with a Light and a Dark version. `Shared/Theme.swift` gives them short names. Use the name (like `Theme.pink`) in code, never a hex code or `.white`, so every screen follows light and dark mode. Light colors come from Figma.
 
 | Light | Dark | Name | Used for |
 |:---:|:---:|---|---|
@@ -112,7 +124,7 @@ Colors are Color Sets in `Assets.xcassets` (named `ThemeBg`, `ThemePink` and so 
 | ![FFFFFF](https://img.shields.io/badge/%20%20%20%20%20%20%20-FFFFFF) `#FFFFFF` | ![2F2240](https://img.shields.io/badge/%20%20%20%20%20%20%20-2F2240) `#2F2240` | `Theme.onAccent` | Text on pink buttons |
 | ![F2B544](https://img.shields.io/badge/%20%20%20%20%20%20%20-F2B544) `#F2B544` | ![FFD60A](https://img.shields.io/badge/%20%20%20%20%20%20%20-FFD60A) `#FFD60A` | `Theme.starLit` | Filled star |
 
-`Theme.decorLine` and `Theme.decorDot` are used by `StarryBackground`. The light/dark choice is saved with `@AppStorage("appearance")` and applied in `MyApp.swift`.
+`Theme.decorLine` and `Theme.decorDot` are used by `StarryBackground`. The light/dark choice is saved with `@AppStorage("appearance")` and applied in `tawhj/tawhjApp.swift`.
 
 ## Team
 
@@ -125,4 +137,4 @@ Colors are Color Sets in `Assets.xcassets` (named `ThemeBg`, `ThemePink` and so 
 | Mays | Friends: home, choose a habit, choose a constellation, invitation, progress | [@maysAlh](https://github.com/maysAlh) |
 | Zaha | Friends: home, choose a habit, choose a constellation, invitation, progress | [@zaha7](https://github.com/zaha7) |
 
-Final step: connect all screens with `NavigationStack` and run the app on an iPhone.
+All screens are connected in one app: sign in → onboarding → choose a star → add a habit → tabs (Home, My Habits, My Sky, Friends).
