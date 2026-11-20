@@ -22,7 +22,7 @@ Miss a day and your star waits for you instead of going out.
   <tr>
     <td align="center"><img src="docs/screenshots/welcome.png" width="200"><br><sub><b>Welcome</b><br>Ghala</sub></td>
     <td align="center"><img src="docs/screenshots/appearance.png" width="200"><br><sub><b>Appearance</b><br>Ghala</sub></td>
-    <td align="center"><img src="docs/screenshots/star-selection.png" width="200"><br><sub><b>Choose Your Star</b><br>Ghala</sub></td>
+    <td align="center"><img src="docs/screenshots/star-selection.png" width="200"><br><sub><b>Choose Your Star</b><br>Ghaida</sub></td>
     <td align="center"><img src="docs/screenshots/habit-intro.png" width="200"><br><sub><b>How Stars Work</b><br>Ghala</sub></td>
   </tr>
   <tr>
@@ -33,7 +33,7 @@ Miss a day and your star waits for you instead of going out.
   </tr>
   <tr>
     <td align="center"><img src="docs/screenshots/My-Habits.png" width="200"><br><sub><b>My Habits</b><br>Lamis</sub></td>
-    <td align="center"><img src="docs/screenshots/Add-habits.png" width="200"><br><sub><b>Add Habit</b><br>Ghala & Lamis</sub></td>
+    <td align="center"><img src="docs/screenshots/Add-habits.png" width="200"><br><sub><b>Add Habit</b><br>Ghaida & Lamis</sub></td>
     <td align="center"><img src="docs/screenshots/Missed-habit.png" width="200"><br><sub><b>Missed Habit</b><br>Lamis</sub></td>
     <td align="center"><img src="docs/screenshots/settings.png" width="200"><br><sub><b>Settings</b><br>Lamis</sub></td>
   </tr>
@@ -79,8 +79,8 @@ wahj/
 ├── Mays/             Friends screens
 ├── Zaha/             Friends screens
 ├── Shared/           Theme, StarryBackground, BottomTabBar
-├── tawhj/            Ghala: sign in, onboarding, star selection, Add Habit,
-│                     app entry point (tawhjApp.swift), Firebase config,
+├── tawhj/            Ghala: sign in, onboarding. Ghaida: star selection, Add Habit.
+│                     Also the app entry point (tawhjApp.swift), Firebase config,
 │                     Assets.xcassets (images, tab bar icons and the light/dark
 │                     Theme… colors)
 ├── firebase/         Firestore rules and the invite page (Firebase Hosting)
