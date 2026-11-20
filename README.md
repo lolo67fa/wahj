@@ -62,13 +62,35 @@ Screenshots live in `docs/screenshots/` (taken in dark mode from each screen's X
 - Do habits with friends, invite them from the iOS share sheet and see their progress
 - Arabic, right-to-left, light and dark mode
 
+## Tech stack
+
+- **SwiftUI** with the Observation framework (`@Observable`)
+- **Firebase Authentication**: sign in with email and password
+- **Cloud Firestore**: habits shared with friends and invites
+- **Firebase Hosting**: the invite link page (`firebase/public`)
+- **Color Sets** in the asset catalog for light and dark mode
+- **Local notifications** for habit reminders
+
+> **Planned:** Firebase is used for now. After joining the Apple Developer Program, we plan to move to Apple's own services (for example Sign in with Apple and CloudKit).
+
+## Privacy
+
+This describes the current version of the app.
+
+- Your personal habits, points and streaks are saved **on your iPhone**, separately for each account.
+- Your email and password are handled by **Firebase Authentication** only. They are never stored in the app's database.
+- Only habits you **share with friends** go to Firestore: the habit's name, icon and days, the chosen constellation, each member's display name and streak, and the days each member completed.
+- Reminders are local notifications scheduled on the device. Nothing is sent to a server.
+
 ## Getting started
+
+**Requirements:** Xcode 27.2 or later, and an iPhone or simulator with iOS 27.0 or later.
 
 ```bash
 git clone https://github.com/lolo67fa/wahj.git
 ```
 
-Open `tawhj.xcodeproj` in Xcode, pick an iPhone simulator and press **Cmd + R**.
+Open `tawhj.xcodeproj` in Xcode, pick an iPhone simulator and press **Cmd + R**. The first build downloads the Firebase packages, so it can take a few minutes.
 
 ## Project structure
 
@@ -109,7 +131,7 @@ Each person works in their own folder. Files in `Shared/` are used by everyone, 
 ## Design
 
 - [Figma design](https://www.figma.com/design/mYQ0TEcEO8A8MxJhZ3nzjY/Wahj?node-id=1-1322&t=43R1Los8qkt5NdsL-1)
-- Miro board: _add the link here_
+- [Miro board](https://miro.com/app/board/uXjVELAB1IY=/?share_link_id=136314216548) (research, concept and task planning)
 
 Colors are Color Sets in `tawhj/Assets.xcassets` (named `ThemeBg`, `ThemePink` and so on), each with a Light and a Dark version. `Shared/Theme.swift` gives them short names. Use the name (like `Theme.pink`) in code, never a hex code or `.white`, so every screen follows light and dark mode. Light colors come from Figma.
 
