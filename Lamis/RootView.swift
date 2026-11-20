@@ -4,24 +4,27 @@ import SwiftUI
 // shows the "missed habit" page when a day was missed,
 // and congratulates the user when a habit's journey is complete.
 struct RootView: View {
-    @State private var store = HabitStore()
+    @Environment(HabitStore.self) private var store
+    @Environment(JourneyService.self) private var journeyService
+    @Environment(InviteInbox.self) private var inviteInbox
     @State private var selectedTab = 1
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
+        @Bindable var store = store
+
         Group {
             switch selectedTab {
             case 1:
                 LamisView(selectedTab: $selectedTab)
             case 0:
-                ComingSoonView(title: "الرئيسية", selectedTab: $selectedTab, showsSettings: true)
+                HomeView(selectedTab: $selectedTab)
             case 2:
-                ComingSoonView(title: "نجمتي", selectedTab: $selectedTab)
+                MySkyView(selectedTab: $selectedTab)
             default:
-                ComingSoonView(title: "أصدقائي", selectedTab: $selectedTab)
+                FriendsTab(selectedTab: $selectedTab)
             }
         }
-        .environment(store)
         // After one missed page closes, show the next missed habit (if any).
         .fullScreenCover(item: $store.missedHabit, onDismiss: { store.showNextMissed() }) { habit in
             MissedHabitView(
@@ -40,9 +43,22 @@ struct RootView: View {
         } message: { habit in
             Text("أكملت رحلة \"\(habit.name)\" — \(arabicNumber(habit.durationDays)) اليوم!")
         }
+        // A friend invite (link or code) opened before or after signing in.
+        .sheet(item: Binding(
+            get: { inviteInbox.code.map(PendingInvite.init) },
+            set: { if $0 == nil { inviteInbox.clear() } }
+        )) { pending in
+            InviteAcceptView(code: pending.code, onJoined: { _ in
+                inviteInbox.clear()
+                selectedTab = 3
+            }, onClose: { inviteInbox.clear() })
+        }
         // Check for a new day / missed days whenever the app comes back to the front.
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { store.checkForNewDay() }
+            if phase == .active {
+                store.checkForNewDay()
+                journeyService.syncStreaks()
+            }
         }
         // If the app stays open past midnight, start the new day automatically.
         .task {
@@ -64,27 +80,11 @@ struct ComingSoonView: View {
     var showsSettings = false
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                HStack {
-                    Text(title)
-                        .font(.largeTitle).bold()
-                        .foregroundStyle(Theme.text)
-                    Spacer()
-                    if showsSettings {
-                        NavigationLink {
-                            SettingsView()
-                        } label: {
-                            Image(systemName: "gearshape")
-                                .font(.title3)
-                                .foregroundStyle(Theme.pink)
-                                .frame(width: 48, height: 48)
-                                .background(Theme.card, in: Circle())
-                                .overlay(Circle().stroke(Theme.border, lineWidth: 1))
-                        }
-                        .accessibilityLabel("الإعدادات")
-                    }
-                }
+        VStack(spacing: 16) {
+            HStack {
+                Text(title)
+                    .font(.largeTitle).bold()
+                    .foregroundStyle(AppTheme.text)
                 Spacer()
                 Text("قريباً")
                     .font(.title2)
@@ -92,13 +92,25 @@ struct ComingSoonView: View {
                 Spacer()
                 BottomTabBar(selected: $selectedTab)
             }
-            .padding()
-            .background { StarryBackground() }
+            Spacer()
+            Text("قريباً")
+                .font(.title2)
+                .foregroundStyle(AppTheme.text.opacity(0.7))
+            Spacer()
+            BottomTabBar(selected: $selectedTab)
         }
         .environment(\.layoutDirection, .rightToLeft)
     }
 }
 
+private struct PendingInvite: Identifiable {
+    let code: String
+    var id: String { code }
+}
+
 #Preview {
     RootView()
+        .environment(HabitStore.preview)
+        .environment(JourneyService())
+        .environment(InviteInbox())
 }

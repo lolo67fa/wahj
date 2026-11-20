@@ -3,7 +3,8 @@ import SwiftUI
 // Settings: appearance (same 3 options as Ghala's first-time page) and a few general rows.
 // The appearance is saved with @AppStorage("appearance"); MyApp applies it to the whole app.
 struct SettingsView: View {
-    @AppStorage("appearance") private var appearance = Appearance.system
+    // Device-level (not per account), the same key the app and onboarding use.
+    @AppStorage("appearance", store: .standard) private var appearance = Appearance.system
     @Environment(\.openURL) private var openURL
 
     private var appVersion: String {
@@ -29,6 +30,11 @@ struct SettingsView: View {
                             .font(.caption)
                             .foregroundStyle(Theme.text.opacity(0.6))
                     }
+                }
+
+                // Account (Ghala): who is signed in, and sign out
+                section(title: "الحساب") {
+                    AccountSection()
                 }
 
                 // General
@@ -126,8 +132,8 @@ private struct AppearanceCard: View {
 
     // The drawing always shows the mode it stands for (not the current mode).
     private struct Palette { let screen, card, line, accent: Color }
-    private let darkPalette = Palette(screen: Color(hex: "2F2240"), card: Color(hex: "3F2B55"),
-                                      line: Color(hex: "5A3F73"), accent: Color(hex: "E6B4E1"))
+    private let darkPalette = Palette(screen: Color(hex: "33203F"), card: Color(hex: "4B2F5C"),
+                                      line: Color(hex: "6A4A7C"), accent: Color(hex: "F2B3E6"))
     private let lightPalette = Palette(screen: Color(hex: "FAF0FB"), card: Color(hex: "F4E3F6"),
                                        line: Color(hex: "DDBFE2"), accent: Color(hex: "A0448F"))
 

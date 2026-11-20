@@ -27,14 +27,14 @@ struct LamisView: View {
                 HStack {
                     Text("عاداتي")
                         .font(.largeTitle).bold()
-                        .foregroundStyle(Theme.text)
+                        .foregroundStyle(AppTheme.text)
                     Spacer()
 
                     Button {
                         isAddingHabit = true
                     } label: {
                         Image(systemName: "plus")
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AppTheme.text)
                             .frame(width: 48, height: 48)
                             .background(Theme.pink, in: Circle())
                             .shadow(color: Theme.pink.opacity(0.6), radius: 10)
@@ -90,7 +90,7 @@ struct LamisView: View {
     private func sectionTitle(_ text: String) -> some View {
         Text(text)
             .font(.subheadline.bold())
-            .foregroundStyle(Theme.text.opacity(0.6))
+            .foregroundStyle(AppTheme.text.opacity(0.6))
             .padding(.top, 8)
     }
 
@@ -128,9 +128,9 @@ struct LamisView: View {
                 .accessibilityHidden(true)
             Text("ابدأ أول عادة")
                 .font(.title2.bold())
-                .foregroundStyle(Theme.text)
+                .foregroundStyle(AppTheme.text)
             Text("كل نجمة تبدأ بخطوة صغيرة")
-                .foregroundStyle(Theme.text.opacity(0.7))
+                .foregroundStyle(AppTheme.text.opacity(0.7))
             ActionButton(title: "أضف عادة", icon: "plus", isPrimary: true) {
                 isAddingHabit = true
             }
@@ -143,5 +143,5 @@ struct LamisView: View {
 
 #Preview {
     LamisView(selectedTab: .constant(1))
-        .environment(HabitStore())
+        .environment(HabitStore.preview)
 }

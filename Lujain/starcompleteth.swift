@@ -20,8 +20,8 @@ struct ConstellationCompletionPage: View {
     @State private var twinkle = false
     @State private var orbitRotation = 0.0
 
-    private let titleColor = Theme.starLit
-    private let darkPurple = Theme.onAccent
+    private let titleColor = Color(red: 1.0, green: 0.90, blue: 0.62)
+    private let darkPurple = AppTheme.onAccent
 
     var body: some View {
         VStack(spacing: 0) {

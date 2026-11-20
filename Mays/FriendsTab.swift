@@ -1,206 +1,69 @@
 import SwiftUI
 import LinkPresentation
 
-// هنا نربط صفحات الاصدقاء كلها
+// صفحات الأصدقاء كلها هنا:
+// الأصدقاء (زها) ← ابدأ عادة مع صديق ← اختيار العادة (زها) ← اختيار النجمة ← إرسال الدعوة
+// وبعد ما تبدأ رحلة مشتركة: صفحة الرحلة (أعضاء، تقدم، ستريك، دعوة صديقة).
+enum FriendsRoute: Hashable {
+    case chooseHabit
+    case chooseStar(habitID: UUID)
+}
+
 struct FriendsTab: View {
-    // ارسلت دعوة قبل او لا
-    @AppStorage("hasFriend") var hasFriend = false
-    // النجمة والعادة المشتركة
-    @AppStorage("sharedStar") var sharedStar = "الثريا"
-    @AppStorage("sharedHabit") var sharedHabit = ""
+    @Binding var selectedTab: Int
+    @Environment(JourneyService.self) private var service
 
     // الصفحات المفتوحة
-    @State var path: [String] = []
+    @State private var path: [FriendsRoute] = []
+    // الرحلة المعروضة لو عندك أكثر من رحلة
+    @State private var selectedJourneyID: String?
+
+    private var currentState: JourneyState? {
+        if let selectedJourneyID, let state = service.state(for: selectedJourneyID) { return state }
+        return service.states.first
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
-            // اول صفحة: فاضية او فيها صديقات
             Group {
-                if hasFriend {
-                    FriendsListView(sharedStar: $sharedStar, path: $path)
-                } else {
-                    FriendsEmptyView(path: $path)
-                }
-            }
-            // كل كلمة تفتح صفحة
-            .navigationDestination(for: String.self) { page in
-                if page == "habit" {
-                    FriendChooseHabitView(selectedHabit: $sharedHabit, path: $path)
-                } else if page == "star" {
-                    FriendChooseStarView(selected: $sharedStar) {
-                        // بعد الدعوة
-                        hasFriend = true
-                        path = []   // نرجع لاول صفحة
-                    }
-                }
-            }
-        }
-    }
-}
-
-// صفحة الاصدقاء لما تكون فاضية
-struct FriendsEmptyView: View {
-    @Binding var path: [String]
-
-    let background = Theme.bg
-    let card = Theme.card
-    let pink = Theme.pink
-    let yellow = Theme.starLit
-
-    var body: some View {
-        ZStack {
-            background.ignoresSafeArea()
-
-            VStack(alignment: .leading, spacing: 16) {
-                Text("الأصدقاء")
-                    .font(.title.bold())
-                Text("رحلة صغيرة.. ونور يجمعكم")
-                    .font(.footnote)
-                    .opacity(0.7)
-
-                // بطاقة نجيمة
-                ZStack {
-                    RoundedRectangle(cornerRadius: 24).fill(card)
-                    Image("icon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 110)
-                }
-                .frame(height: 140)
-
-                VStack(spacing: 8) {
-                    Text("مع بعض، العادة أحلى")
-                        .font(.title2.bold())
-                    Text("عادة واحدة، أنتِ وصديقتك، ونجمة تنورونها سوا.")
-                        .font(.footnote)
-                        .opacity(0.7)
-                }
-                .frame(maxWidth: .infinity)
-                .multilineTextAlignment(.center)
-
-                // يفتح صفحة اختيار العادة
-                Button {
-                    path.append("habit")
-                } label: {
-                    Text("ابدأ عادة مع صديق")
-                        .bold()
-                        .foregroundStyle(Theme.onAccent)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(pink)
-                        .clipShape(Capsule())
-                }
-
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("لكل عادة رحلتها")
-                        .bold()
-                        .foregroundStyle(yellow)
-                    Text("تقدرين تبدئين المشاركة مع صديق آخر.\nكل رحلة لها عادة وجدول ورصيد مستقل.")
-                        .font(.footnote)
-                        .opacity(0.7)
-                }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(card)
-                .clipShape(RoundedRectangle(cornerRadius: 24))
-
-                Spacer()
-            }
-            .padding()
-            .foregroundStyle(Theme.text)
-        }
-        .environment(\.layoutDirection, .rightToLeft)
-    }
-}
-
-// صفحة اختيار العادة
-struct FriendChooseHabitView: View {
-    @Binding var selectedHabit: String
-    @Binding var path: [String]
-
-    let background = Theme.bg
-    let card = Theme.card
-    let pink = Theme.pink
-
-    // عادات المستخدمة
-    let habits = [
-        ("المشي", "من عاداتك · يوميًا"),
-        ("القراءة", "من عاداتك · يوميًا")
-    ]
-
-    var body: some View {
-        ZStack {
-            background.ignoresSafeArea()
-
-            VStack(alignment: .leading, spacing: 16) {
-                Text("ابدؤوا عادة سوا")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-
-                Text("وش العادة اللي تبغون تبدؤونها سوا؟")
-                    .font(.title2.bold())
-                Text("اختاري عادة واحدة")
-                    .font(.footnote)
-                    .opacity(0.7)
-
-                // بطاقة لكل عادة
-                ForEach(habits, id: \.0) { habit in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(habit.0).bold()
-                            Text(habit.1).font(.caption).opacity(0.7)
-                        }
-                        Spacer()
-                        // دائرة الاختيار
-                        Image(systemName: selectedHabit == habit.0 ? "largecircle.fill.circle" : "circle")
-                            .foregroundStyle(pink)
-                    }
-                    .padding()
-                    .background(card)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(pink, lineWidth: selectedHabit == habit.0 ? 2 : 0)
+                if let currentState {
+                    FriendsListView(
+                        state: currentState,
+                        allStates: service.states,
+                        selectedTab: $selectedTab,
+                        onSelectJourney: { selectedJourneyID = $0 },
+                        onStartNew: { path.append(.chooseHabit) }
                     )
-                    .onTapGesture { selectedHabit = habit.0 }
+                } else {
+                    // أول صفحة (زها): ما فيه رحلات مشتركة بعد
+                    FriendsScreen(selectedTab: $selectedTab)
                 }
-
-                Button {
-                } label: {
-                    Text("اضف عادة جديدة")
-                        .bold()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(card)
-                        .clipShape(Capsule())
-                }
-
-                Spacer()
-
-                // يفتح صفحة اختيار النجمة
-                Button {
-                    path.append("star")
-                } label: {
-                    Text("المتابعة")
-                        .bold()
-                        .foregroundStyle(Theme.onAccent)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(pink)
-                        .clipShape(Capsule())
-                }
-                // ما يشتغل الا اذا اختارت عادة
-                .disabled(selectedHabit.isEmpty)
-                .opacity(selectedHabit.isEmpty ? 0.5 : 1)
             }
-            .padding()
-            .foregroundStyle(Theme.text)
+            .toolbar(.hidden, for: .navigationBar)
+            .navigationDestination(for: FriendsRoute.self) { route in
+                switch route {
+                case .chooseHabit:
+                    StartHabitTogetherScreen { habit in
+                        path.append(.chooseStar(habitID: habit.id))
+                    }
+                case .chooseStar(let habitID):
+                    FriendChooseStarView(habitID: habitID) { journeyID in
+                        // بعد الدعوة نرجع لأول صفحة وتظهر الرحلة
+                        selectedJourneyID = journeyID
+                        path = []
+                    }
+                }
+            }
         }
         .environment(\.layoutDirection, .rightToLeft)
+        .environment(\.locale, Locale(identifier: "ar"))
     }
 }
 
-// نافذة المشاركة، وتقول لنا اذا انرسلت او لا
+// MARK: - Share sheet
+
+// نافذة المشاركة الأصلية في iOS، وتقول لنا اذا انرسلت او لا.
+// فيها «نسخ» تلقائيًا لنسخ الرابط والرمز.
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
     let onDone: (Bool) -> Void
@@ -217,14 +80,25 @@ struct ShareSheet: UIViewControllerRepresentable {
     func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
 }
 
-// محتوى الدعوة: الرسالة والرابط وصورة نجيمة
-class InviteItem: NSObject, UIActivityItemSource {
+// محتوى الدعوة: رسالة عربية فيها الرابط ورمز الدعوة، وصورة نُجيمة فوق النافذة.
+// الرابط ما فيه أي بيانات شخصية، فقط رمز عشوائي.
+final class InviteItem: NSObject, UIActivityItemSource {
     let text: String
     let url: URL
 
     init(text: String, url: URL) {
         self.text = text
         self.url = url
+    }
+
+    convenience init(invite: InviteSummary) {
+        let star = StarProgress.names[min(max(invite.constellationIndex, 0), StarProgress.names.count - 1)]
+        let text = """
+        تعالي نكمل نجمة «\(star)» سوا في وَهج ✨
+        عادتنا: \(invite.habitTitle)
+        رمز الدعوة: \(InviteCode.formatted(invite.code))
+        """
+        self.init(text: text, url: InviteCode.webLink(for: invite.code))
     }
 
     func activityViewControllerPlaceholderItem(_ vc: UIActivityViewController) -> Any {
@@ -241,7 +115,8 @@ class InviteItem: NSObject, UIActivityItemSource {
     func activityViewControllerLinkMetadata(_ vc: UIActivityViewController) -> LPLinkMetadata? {
         let info = LPLinkMetadata()
         info.title = "دعوة من وَهج"
-        if let image = UIImage(named: "icon") {
+        info.originalURL = url
+        if let image = UIImage(named: "starCharacter") {
             info.iconProvider = NSItemProvider(object: image)
         }
         return info
@@ -249,5 +124,7 @@ class InviteItem: NSObject, UIActivityItemSource {
 }
 
 #Preview {
-    FriendsTab()
+    FriendsTab(selectedTab: .constant(3))
+        .environment(HabitStore.preview)
+        .environment(JourneyService())
 }

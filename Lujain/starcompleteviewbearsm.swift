@@ -10,8 +10,8 @@ struct StarCompletionPage: View {
     @State private var twinkle = false
     @State private var orbitRotation = 0.0
 
-    private let titleColor = Theme.starLit
-    private let darkPurple = Theme.onAccent
+    private let titleColor = Color(red: 1.0, green: 0.90, blue: 0.62)
+    private let darkPurple = AppTheme.onAccent
 
     var body: some View {
         VStack(spacing: 0) {
@@ -178,28 +178,7 @@ struct LineShape: Shape {
     }
 }
 
-// Decorative orbit ring
-struct OrbitRings: View {
-    let rotation: Double
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(Theme.text.opacity(0.12), lineWidth: 1)
-
-            Ellipse()
-                .stroke(Theme.text.opacity(0.18), lineWidth: 1)
-                .frame(width: 340, height: 130)
-                .rotationEffect(.degrees(-12 + rotation))
-
-            Circle()
-                .fill(Theme.text.opacity(0.35))
-                .frame(width: 6, height: 6)
-                .offset(x: -160)
-                .rotationEffect(.degrees(rotation))
-        }
-    }
-}
+// OrbitRings is shared with Lamis/MissedHabitView.swift
 
 //  Button press
 struct PressScaleStyle: ButtonStyle {

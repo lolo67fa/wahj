@@ -1,0 +1,120 @@
+rules_version = '2';
+
+// Wahj — friends journeys.
+// Only members can read a journey. Each member writes only their own member
+// document and their own completions. Nobody can add themselves to a journey
+// except as its creator, or with a valid (not expired, not revoked) invite.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function journeyPath(jid) { return /databases/$(database)/documents/journeys/$(jid); }
+    function memberPath(jid, uid) { return /databases/$(database)/documents/journeys/$(jid)/members/$(uid); }
+    function isMember(jid) { return signedIn() && exists(memberPath(jid, request.auth.uid)); }
+    function isActiveMember(jid) {
+      return isMember(jid) && get(memberPath(jid, request.auth.uid)).data.active == true;
+    }
+    function validInvite(code, jid) {
+      let invite = get(/databases/$(database)/documents/invites/$(code));
+      return invite.data.journeyId == jid
+        && invite.data.revoked == false
+        && invite.data.expiresAt > request.time;
+    }
+
+    // Each user's own list of journeys.
+    match /users/{uid}/journeys/{jid} {
+      allow read, delete: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && existsAfter(memberPath(jid, uid))
+        && request.resource.data.keys().hasOnly(['joinedAt']);
+    }
+
+    match /journeys/{jid} {
+      allow read: if isMember(jid);
+      // Created together with the creator's own member document (one batch).
+      allow create: if signedIn()
+        && request.resource.data.createdBy == request.auth.uid
+        && existsAfter(memberPath(jid, request.auth.uid))
+        && request.resource.data.keys().hasOnly(['habitTitle', 'habitIcon', 'habitDays',
+                                                 'constellationIndex', 'createdBy', 'createdAt'])
+        && request.resource.data.habitTitle is string
+        && request.resource.data.habitTitle.size() <= 100
+        && request.resource.data.constellationIndex is int
+        && request.resource.data.constellationIndex >= 0
+        && request.resource.data.constellationIndex < 6;
+      // Editing a habit later never rewrites the shared journey or its history.
+      allow update, delete: if false;
+
+      match /members/{uid} {
+        // A user may read their own (maybe missing) member document, so accepting
+        // an invite can check "already a member" inside its transaction.
+        allow read: if isMember(jid) || (signedIn() && request.auth.uid == uid);
+        allow create: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['displayName', 'role', 'inviteCode',
+                                                   'streak', 'active', 'joinedAt'])
+          && request.resource.data.active == true
+          && request.resource.data.streak is int
+          && request.resource.data.displayName is string
+          && request.resource.data.displayName.size() <= 40
+          && (
+            (request.resource.data.role == 'owner'
+              && !exists(journeyPath(jid))
+              && getAfter(journeyPath(jid)).data.createdBy == uid)
+            ||
+            (request.resource.data.role == 'member'
+              && exists(journeyPath(jid))
+              && request.resource.data.inviteCode is string
+              && validInvite(request.resource.data.inviteCode, jid))
+          );
+        // Own streak, name and leaving only; never role or invite.
+        allow update: if signedIn() && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['streak', 'displayName', 'active'])
+          && request.resource.data.streak is int
+          && request.resource.data.active is bool;
+        // Leaving keeps the document (and the member's past completions).
+        allow delete: if false;
+      }
+
+      // One document per member per day: uid_yyyy-MM-dd.
+      match /completions/{cid} {
+        allow read: if isMember(jid);
+        allow create: if isActiveMember(jid)
+          && request.resource.data.uid == request.auth.uid
+          && cid == request.auth.uid + '_' + request.resource.data.day
+          && request.resource.data.day is string
+          && request.resource.data.day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+          && request.resource.data.keys().hasOnly(['uid', 'day', 'recordedAt']);
+        allow update: if isActiveMember(jid)
+          && resource.data.uid == request.auth.uid
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.day == resource.data.day
+          && request.resource.data.keys().hasOnly(['uid', 'day', 'recordedAt']);
+        allow delete: if isMember(jid) && resource.data.uid == request.auth.uid;
+      }
+    }
+
+    // Invites: random 20-character codes. Anyone signed in may read one invite
+    // by its exact code (to see the summary); nobody can list other people's.
+    match /invites/{code} {
+      allow get: if signedIn();
+      allow list: if signedIn() && resource.data.inviterUid == request.auth.uid;
+      allow create: if signedIn()
+        && code.matches('^[0-9A-HJKMNP-TV-Z]{20}$')
+        && request.resource.data.inviterUid == request.auth.uid
+        && isActiveMember(request.resource.data.journeyId)
+        && request.resource.data.revoked == false
+        && request.resource.data.expiresAt is timestamp
+        && request.resource.data.expiresAt <= request.time + duration.value(8, 'd')
+        && request.resource.data.keys().hasOnly(['journeyId', 'inviterUid', 'inviterName',
+                                                 'habitTitle', 'habitIcon', 'habitDays',
+                                                 'constellationIndex', 'createdAt',
+                                                 'expiresAt', 'revoked']);
+      allow update: if signedIn()
+        && resource.data.inviterUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['revoked'])
+        && request.resource.data.revoked == true;
+      allow delete: if false;
+    }
+  }
+}
