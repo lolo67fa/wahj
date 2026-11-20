@@ -74,7 +74,7 @@ struct DailyProgressSection: View {
                 .foregroundStyle(AppTheme.text.opacity(0.75))
 
             ProgressView(value: progress)
-                .tint(Theme.cream)
+                .tint(Color(hex: "FBEFC8"))
                 .scaleEffect(y: 1.5)
                 .padding(.vertical, 3)
         }
@@ -96,10 +96,10 @@ struct StarProgressSection: View {
 
             Text("\(pointsTowardNextStar) / ١٠٠ نقطة")
                 .font(.caption.bold())
-                .foregroundStyle(Theme.cream)
+                .foregroundStyle(Color(hex: "FBEFC8"))
 
             ProgressView(value: progress)
-                .tint(Theme.cream)
+                .tint(Color(hex: "FBEFC8"))
                 .scaleEffect(y: 1.5)
                 .padding(.vertical, 3)
 

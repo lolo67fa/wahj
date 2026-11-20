@@ -6,13 +6,20 @@ struct LamisView: View {
     @State private var editingHabit: Habit?
     @State private var isAddingHabit = false
 
-    // Today's habits: not done first, then done.
+    // Today's habits: favorites (starred) first, then the rest;
+    // inside each group, not-done habits come before done ones.
     private var todayHabits: [Habit] {
         let today = store.habits.filter { $0.isScheduledToday && !$0.isFinished }
-        return today.filter { !$0.isDoneToday } + today.filter(\.isDoneToday)
+        return favoritesFirst(today.filter { !$0.isDoneToday }) + favoritesFirst(today.filter(\.isDoneToday))
     }
-    private var otherHabits: [Habit] { store.habits.filter { !$0.isScheduledToday && !$0.isFinished } }
-    private var finishedHabits: [Habit] { store.habits.filter(\.isFinished) }
+    private var otherHabits: [Habit] {
+        favoritesFirst(store.habits.filter { !$0.isScheduledToday && !$0.isFinished })
+    }
+    private var finishedHabits: [Habit] { favoritesFirst(store.habits.filter(\.isFinished)) }
+
+    private func favoritesFirst(_ habits: [Habit]) -> [Habit] {
+        habits.filter(\.isFavorite) + habits.filter { !$0.isFavorite }
+    }
 
     var body: some View {
         NavigationStack {
@@ -22,6 +29,7 @@ struct LamisView: View {
                         .font(.largeTitle).bold()
                         .foregroundStyle(AppTheme.text)
                     Spacer()
+
                     Button {
                         isAddingHabit = true
                     } label: {
@@ -59,6 +67,8 @@ struct LamisView: View {
                             }
                         }
                         .animation(.snappy, value: store.habits.map(\.todayCount))
+                        // Starred habits slide to the top.
+                        .animation(.snappy, value: store.habits.map(\.isFavorite))
                     }
                     .scrollIndicators(.hidden)
                 }

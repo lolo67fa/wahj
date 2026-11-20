@@ -15,18 +15,11 @@ struct SpaceBackground: View {
             let sy = geometry.size.height / 874
 
             ZStack {
-                Color(
-                    red: 51.0 / 255,
-                    green: 32.0 / 255,
-                    blue: 63.0 / 255
-                )
+                // نفس البنفسجي المعتمد (داكن) ولون فيقما الفاتح، حسب المظهر
+                AppTheme.background
 
                 Canvas { context, _ in
-                    let color = Color(
-                        red: 106.0 / 255,
-                        green: 65.0 / 255,
-                        blue: 127.0 / 255
-                    )
+                    let color = AppTheme.orbit
 
                     // المدارات الكبيرة عند أطراف الشاشة
                     let circles: [CGRect] = [
@@ -150,11 +143,7 @@ struct SpaceBackground: View {
 
 // المدار المحيط بشخصية النجمة
 struct StarOrbit: View {
-    private let orbitColor = Color(
-        red: 106.0 / 255,
-        green: 65.0 / 255,
-        blue: 127.0 / 255
-    )
+    private let orbitColor = AppTheme.orbit
 
     var body: some View {
         ZStack {

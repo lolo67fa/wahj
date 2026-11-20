@@ -11,7 +11,7 @@ enum FriendsTheme {
     static let hero = AppTheme.elevated
     static let pink = AppTheme.accent
     static let purple = AppTheme.elevated
-    static let yellow = Color(.sRGB, red: 255 / 255, green: 230 / 255, blue: 146 / 255)   // star sparkles (gold)
+    static let yellow = AppTheme.gold   // star sparkles and the "لكل عادة رحلتها" title (amber in light mode)
     static let text = AppTheme.text
     static let subtle = AppTheme.textSecondary
 }

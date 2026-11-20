@@ -150,7 +150,7 @@ struct FriendsListView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("نجمتنا سوا · \(starName)")
                     .font(.footnote.bold())
-                    .foregroundStyle(AppTheme.text)
+                    .foregroundStyle(AppTheme.onSky)
 
                 ConstellationDrawing(
                     index: state.journey.constellationIndex,
@@ -164,11 +164,11 @@ struct FriendsListView: View {
                 HStack {
                     Label(state.journey.habitTitle, systemImage: state.journey.habitIcon)
                         .font(.footnote)
-                        .foregroundStyle(AppTheme.textSecondary)
+                        .foregroundStyle(AppTheme.onSkySecondary)
                     Spacer()
                     Text("\(arabicNumber(state.points)) / ١٠٠ نقطة")
                         .font(.footnote.bold())
-                        .foregroundStyle(AppTheme.accent)
+                        .foregroundStyle(AppTheme.onSkyAccent)
                         .contentTransition(.numericText())
                 }
             }

@@ -44,7 +44,6 @@ struct InviteAcceptView: View {
             .padding(.bottom, 24)
         }
         .environment(\.layoutDirection, .rightToLeft)
-        .preferredColorScheme(.dark)
         .task { await load() }
     }
 
@@ -251,7 +250,6 @@ struct InviteCodeEntryView: View {
                 .padding(24)
             }
             .environment(\.layoutDirection, .rightToLeft)
-            .preferredColorScheme(.dark)
             .presentationDetents([.medium, .large])
         }
     }

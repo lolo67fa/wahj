@@ -73,9 +73,11 @@ struct RootView: View {
 }
 
 // Placeholder for tabs that teammates are building.
+// The home placeholder has a settings button until Lujain's home page is connected.
 struct ComingSoonView: View {
     var title: String
     @Binding var selectedTab: Int
+    var showsSettings = false
 
     var body: some View {
         VStack(spacing: 16) {
@@ -84,6 +86,11 @@ struct ComingSoonView: View {
                     .font(.largeTitle).bold()
                     .foregroundStyle(AppTheme.text)
                 Spacer()
+                Text("قريباً")
+                    .font(.title2)
+                    .foregroundStyle(Theme.text.opacity(0.7))
+                Spacer()
+                BottomTabBar(selected: $selectedTab)
             }
             Spacer()
             Text("قريباً")
@@ -92,8 +99,6 @@ struct ComingSoonView: View {
             Spacer()
             BottomTabBar(selected: $selectedTab)
         }
-        .padding()
-        .background { StarryBackground() }
         .environment(\.layoutDirection, .rightToLeft)
     }
 }

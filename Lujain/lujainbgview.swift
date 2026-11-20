@@ -129,9 +129,9 @@ struct HomeView: View {
                 dateText: day.dateText,
                 streakDays: day.streakDays
             )
-            // قائمة الحساب (تسجيل الخروج) في الزاوية العلوية المقابلة للتحية
+            // الإعدادات (المظهر، الحساب وتسجيل الخروج) في الزاوية المقابلة للتحية
             .overlay(alignment: .topLeading) {
-                AccountMenuButton()
+                SettingsButton()
             }
 
             ScrollView {
@@ -208,7 +208,7 @@ struct DashboardHeader: View {
                 Text("\(arabicNumber(streakDays)) أيام متتالية")
                     .font(.subheadline)
             }
-            .foregroundStyle(Theme.cream)
+            .foregroundStyle(Color("ThemePoints"))
             .padding(.horizontal, 14)
             .padding(.vertical, 9)
             .background(Theme.card)

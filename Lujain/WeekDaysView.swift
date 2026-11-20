@@ -19,7 +19,7 @@ struct WeekDaysView: View {
                     }
                     .foregroundStyle(
                         selectedDayID == day.id
-                        ? Theme.cream
+                        ? Color("ThemePoints")
                         : Theme.pink
                     )
                     .frame(maxWidth: .infinity)
@@ -30,7 +30,7 @@ struct WeekDaysView: View {
                         RoundedRectangle(cornerRadius: 18)
                             .stroke(
                                 selectedDayID == day.id
-                                ? Theme.cream
+                                ? Color("ThemePoints")
                                 : Theme.border,
                                 lineWidth: selectedDayID == day.id ? 2 : 1
                             )

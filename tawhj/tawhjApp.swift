@@ -23,6 +23,8 @@ struct tawhjApp: App {
     // الرحلات المشتركة مع الأصدقاء (Firestore) والدعوات اللي وصلت.
     @State private var journeyService = JourneyService()
     @State private var inviteInbox = InviteInbox()
+    // فاتح / داكن / حسب الجهاز — من صفحة المظهر في البداية أو الإعدادات.
+    @AppStorage("appearance") private var appearance = Appearance.system
 
     var body: some Scene {
         WindowGroup {
@@ -30,6 +32,7 @@ struct tawhjApp: App {
                 .environment(habitStore)
                 .environment(journeyService)
                 .environment(inviteInbox)
+                .preferredColorScheme(appearance.colorScheme)
                 // wahj://invite/CODE أو https://wahj-ad44b.web.app/i/CODE
                 // تنحفظ الدعوة وتفتح بعد تسجيل الدخول والتهيئة.
                 .onOpenURL { url in
