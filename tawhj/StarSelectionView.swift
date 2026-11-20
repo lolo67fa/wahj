@@ -180,30 +180,28 @@ struct StarSelectionView: View {
                         if !unlocked {
                             Image(systemName: "lock.fill")
                                 .font(.system(size: 11))
-                                .foregroundStyle(pink)
+                                .foregroundStyle(AppTheme.onSkyAccent)
                         }
                     }
-                    .foregroundStyle(AppTheme.text)
+                    .foregroundStyle(AppTheme.onSky)
 
                     HStack {
                         Text("١٠٠ نقطة")
                             .font(.system(size: 11))
-                            .foregroundStyle(pink)
+                            .foregroundStyle(AppTheme.onSkyAccent)
 
                         Spacer()
 
                         if selected {
                             Text("مختارة")
                                 .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(
-                                    AppTheme.background
-                                )
+                                .foregroundStyle(Color(hex: "33203F"))
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 4)
-                                .background(pink, in: Capsule())
+                                .background(AppTheme.onSkyAccent, in: Capsule())
                         } else if progress == 100 {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(pink)
+                                .foregroundStyle(AppTheme.onSkyAccent)
                         }
                     }
                 }
@@ -214,7 +212,7 @@ struct StarSelectionView: View {
             .overlay {
                 RoundedRectangle(cornerRadius: 22)
                     .stroke(
-                        selected ? pink : pink.opacity(0.12),
+                        selected ? AppTheme.onSkyAccent : AppTheme.onSkyAccent.opacity(0.12),
                         lineWidth: 1
                     )
             }

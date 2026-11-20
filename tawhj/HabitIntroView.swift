@@ -109,7 +109,6 @@ struct HabitIntroView: View {
             .padding(.bottom, 55)
         }
         .environment(\.layoutDirection, .rightToLeft)
-        .preferredColorScheme(.dark)
         .fullScreenCover(isPresented: $showStarSelection) {
             StarSelectionView()
         }

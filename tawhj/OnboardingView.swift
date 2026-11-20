@@ -40,7 +40,8 @@ private enum IntroAppearance: String, CaseIterable, Identifiable {
 }
 
 struct OnboardingView: View {
-    @AppStorage("selectedAppearance")
+    // نفس اختيار المظهر في الإعدادات، ويتطبق على التطبيق كله فورًا.
+    @AppStorage("appearance", store: .standard)
     private var appearance = "system"
 
     @AppStorage("displayName")
@@ -80,7 +81,6 @@ struct OnboardingView: View {
         }
         .foregroundStyle(IntroColors.text)
         .environment(\.layoutDirection, .rightToLeft)
-        .preferredColorScheme(.dark)
         .fullScreenCover(isPresented: $showWelcome) {
             WelcomeView()
         }

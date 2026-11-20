@@ -30,7 +30,6 @@ struct ContentView: View {
                 welcomeScreen
             }
         }
-        .preferredColorScheme(.dark)
         .sheet(isPresented: $showLogin) {
             EmailLoginView()
         }
@@ -309,7 +308,6 @@ private struct EmailLoginView: View {
             }
         }
         .environment(\.layoutDirection, .rightToLeft)
-        .preferredColorScheme(.dark)
         .interactiveDismissDisabled(isLoading)
         .alert("تنبيه", isPresented: $showMessage) {
             Button("تمام", role: .cancel) {}

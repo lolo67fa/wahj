@@ -77,7 +77,8 @@ struct MySkyView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .environment(\.layoutDirection, .rightToLeft)
-        .preferredColorScheme(.dark)
+        // «سمائي» سماء ليلية دائمًا، بدون ما تغيّر مظهر بقية التطبيق.
+        .environment(\.colorScheme, .dark)
         .sensoryFeedback(.selection, trigger: tapCount)
         .sensoryFeedback(.success, trigger: celebrating) { _, new in new }
         .onAppear {

@@ -43,7 +43,9 @@ struct HabitCard: View {
             Button(action: onToggleFavorite) {
                 Image(systemName: habit.isFavorite ? "star.fill" : "star")
                     .font(.title)
-                    .foregroundStyle(habit.isFavorite ? AppTheme.gold : Theme.pink)
+                    .foregroundStyle(habit.isFavorite ? Theme.starLit : Theme.pink)
+                    // Soft glow, only on the filled star.
+                    .shadow(color: habit.isFavorite ? Theme.starLit.opacity(0.55) : .clear, radius: 6)
             }
             .accessibilityLabel(habit.isFavorite ? "إزالة من المفضلة" : "إضافة إلى المفضلة")
         }

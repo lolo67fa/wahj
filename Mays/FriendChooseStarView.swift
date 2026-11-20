@@ -138,20 +138,20 @@ struct FriendStarCard: View {
                 HStack {
                     Text(StarProgress.names[index])
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundStyle(AppTheme.text)
+                        .foregroundStyle(AppTheme.onSky)
                     Spacer()
                     if isSelected {
                         Text("مختارة")
                             .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(AppTheme.onAccent)
+                            .foregroundStyle(Color(hex: "33203F"))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 4)
-                            .background(AppTheme.accent, in: Capsule())
+                            .background(AppTheme.onSkyAccent, in: Capsule())
                     }
                 }
                 Text("١٠٠ نقطة لكل مجموعة")
                     .font(.system(size: 11))
-                    .foregroundStyle(AppTheme.accent)
+                    .foregroundStyle(AppTheme.onSkyAccent)
             }
             .padding(14)
         }
@@ -159,7 +159,7 @@ struct FriendStarCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .overlay {
             RoundedRectangle(cornerRadius: 22)
-                .stroke(isSelected ? AppTheme.accent : AppTheme.accent.opacity(0.12), lineWidth: isSelected ? 2 : 1)
+                .stroke(isSelected ? AppTheme.onSkyAccent : AppTheme.onSkyAccent.opacity(0.12), lineWidth: isSelected ? 2 : 1)
         }
         .environment(\.layoutDirection, .rightToLeft)
     }

@@ -130,14 +130,14 @@ struct PointsBadge: View {
             Text("+\(points)")
                 .font(.system(size: 13, weight: .bold))
         }
-        .foregroundStyle(AppTheme.accentShadow)
+        .foregroundStyle(Color(hex: "8C338C"))
         .padding(.horizontal, 14)
         .padding(.vertical, 7)
         .background(
             Capsule().fill(
                 isDone
-                ? AppTheme.accent
-                : AppTheme.text
+                ? AppTheme.onSkyAccent
+                : AppTheme.onSky
             )
         )
     }

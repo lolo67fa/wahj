@@ -2,13 +2,14 @@
 //  AppTheme.swift
 //  Shared
 //
-//  The one color palette for every screen in Wahj. The values come from the
-//  colors already used on the sign-in / onboarding / star selection screens
-//  (and the same ones in the friends screens), so nothing here is new.
-//  Use these names instead of writing Color(red:green:blue:) in a view.
-//
-//  The space background (SpaceBackground, StarryBackground), the orbits
-//  (StarOrbit, OrbitRings) and the gold star light keep their own colors.
+//  The one color palette for every screen in Wahj, in light and dark.
+//  Each color is a Color Set in tawhj/Assets.xcassets (Theme…) with an Any
+//  (light) and a Dark value, so SwiftUI picks the right one for the
+//  appearance chosen in onboarding or Settings.
+//    Dark  = the unified palette (#33203F background, #4B2F5C cards, #F2B3E6 pink…)
+//    Light = the team's Figma light colors (Lamis's light mode)
+//  Use these names (or Theme's, which point to the same Color Sets) instead of
+//  writing Color(red:green:blue:) in a view.
 //
 
 import SwiftUI
@@ -16,43 +17,51 @@ import SwiftUI
 enum AppTheme {
     // MARK: Surfaces
 
-    /// Dark purple behind every screen.  #33203F
-    static let background = rgb(51, 32, 63)
-    /// Cards, rows, the tab bar.  #4B2F5C
-    static let surface = rgb(75, 47, 92)
-    /// Text fields and softer cards.  #432A52
-    static let field = rgb(67, 42, 82)
-    /// The lighter purple: featured cards, constellation cards, the selected tab.  #6E3F8A
-    static let elevated = rgb(110, 63, 138)
-    /// Thin borders around cards, rows and fields.  #6A4A7C
-    static let border = rgb(106, 74, 124)
+    /// Behind every screen.
+    static let background = Color("ThemeBg")
+    /// Cards, rows, the tab bar.
+    static let surface = Color("ThemeCard")
+    /// Text fields and softer cards.
+    static let field = Color("ThemeField")
+    /// The deep purple "sky": constellation cards, the selected tab.
+    static let elevated = Color("ThemeSky")
+    /// Thin borders around cards, rows and fields.
+    static let border = Color("ThemeBorder")
+    /// The orbit lines and dots of the space background.
+    static let orbit = Color("ThemeOrbit")
 
     // MARK: Accent
 
-    /// Pink for buttons, selection, toggles and active icons.  #F2B3E6
-    static let accent = rgb(242, 179, 230)
-    /// Text and icons on top of a pink button.  Same as the background.
-    static let onAccent = background
-    /// The solid shadow under pink buttons.  #591258
-    static let accentShadow = rgb(89, 18, 88)
+    /// Pink for buttons, selection, toggles and active icons.
+    static let accent = Color("ThemePink")
+    /// Text and icons on top of a pink button.
+    static let onAccent = Color("ThemeOnAccent")
+    /// The solid shadow under pink buttons.
+    static let accentShadow = Color("ThemeAccentShadow")
 
     // MARK: Text
 
-    /// Main text: white with a touch of pink.  #FFF4FD
-    static let text = rgb(255, 244, 253)
-    /// Secondary text and captions.  #E3C8EA
-    static let textSecondary = rgb(227, 200, 234)
+    /// Main text.
+    static let text = Color("ThemeText")
+    /// Secondary text and captions.
+    static let textSecondary = Color("ThemeTextSecondary")
     /// Disabled controls keep their color at this opacity.
     static let disabledOpacity = 0.5
 
+    // MARK: On the night-sky cards (constellation cards stay deep purple in both modes)
+
+    static let onSky = rgb(255, 244, 253)
+    static let onSkySecondary = rgb(227, 200, 234)
+    static let onSkyAccent = rgb(242, 179, 230)
+
     // MARK: Light and states
 
-    /// Gold light for stars and achievements (unchanged).  #FFEBA6
-    static let gold = rgb(255, 235, 166)
-    /// Soft cream used for completed icons and the selected day.  #FBEFC8
-    static let cream = rgb(251, 239, 200)
-    /// Errors stay clearly red-pink against the purple.  #FF8A9A
-    static let error = rgb(255, 138, 154)
+    /// Gold light for stars and achievements.
+    static let gold = Color("ThemeGold")
+    /// Soft cream used for completed icons and the selected day.
+    static let cream = Color("ThemeCream")
+    /// Errors stay clearly red-pink in both modes.
+    static let error = Color("ThemeError")
     /// Success uses the gold light.
     static let success = gold
 

@@ -136,7 +136,6 @@ struct AddHabitView: View {
         }
         .foregroundStyle(AppTheme.text)
         .environment(\.layoutDirection, .rightToLeft)
-        .preferredColorScheme(.dark)
         .sheet(isPresented: $showTimePicker) {
             timePickerSheet
         }
@@ -464,7 +463,6 @@ struct AddHabitView: View {
         .presentationDetents([.height(350)])
         .presentationDragIndicator(.visible)
         .presentationBackground(rowColor)
-        .preferredColorScheme(.dark)
     }
 
     private func sectionLabel(_ title: String) -> some View {

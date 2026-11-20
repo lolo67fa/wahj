@@ -57,7 +57,6 @@ struct FriendsTab: View {
         }
         .environment(\.layoutDirection, .rightToLeft)
         .environment(\.locale, Locale(identifier: "ar"))
-        .preferredColorScheme(.dark)
     }
 }
 
