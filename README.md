@@ -23,7 +23,7 @@ Miss a day and your star waits for you instead of going out.
     <td align="center"><img src="docs/screenshots/welcome.png" width="200"><br><sub><b>Welcome</b><br>Ghala</sub></td>
     <td align="center"><img src="docs/screenshots/appearance.png" width="200"><br><sub><b>Appearance</b><br>Ghala</sub></td>
     <td align="center"><img src="docs/screenshots/star-selection.png" width="200"><br><sub><b>Choose Your Star</b><br>Ghaida</sub></td>
-    <td align="center"><img src="docs/screenshots/habit-intro.png" width="200"><br><sub><b>How Stars Work</b><br>Ghala</sub></td>
+    <td align="center"><img src="docs/screenshots/habit-intro.png" width="200"><br><sub><b>How Stars Work</b><br>Ghaida</sub></td>
   </tr>
   <tr>
     <td align="center"><img src="docs/screenshots/lujain-home.png" width="200"><br><sub><b>Home</b><br>Lujain</sub></td>
@@ -79,7 +79,8 @@ wahj/
 ├── Mays/             Friends screens
 ├── Zaha/             Friends screens
 ├── Shared/           Theme, StarryBackground, BottomTabBar
-├── tawhj/            Ghala: sign in, onboarding. Ghaida: star selection, Add Habit.
+├── tawhj/            Ghala: sign in (Firebase), welcome, appearance. Ghaida: how
+│                     stars work, star selection, Add Habit.
 │                     Also the app entry point (tawhjApp.swift), Firebase config,
 │                     Assets.xcassets (images, tab bar icons and the light/dark
 │                     Theme… colors)
