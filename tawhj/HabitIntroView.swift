@@ -97,6 +97,8 @@ struct HabitIntroView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(pink, in: Capsule())
+                        // الظل تحت الزر فقط، مو على النص
+                        .compositingGroup()
                         .shadow(
                             color: AppTheme.accentShadow,
                             radius: 0,

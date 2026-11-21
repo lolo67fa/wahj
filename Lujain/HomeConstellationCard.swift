@@ -63,6 +63,7 @@ struct HomeConstellationCard: View {
             RoundedRectangle(cornerRadius: 22)
                 .stroke(pink.opacity(0.35), lineWidth: 1)
         }
+        .compositingGroup()
         .shadow(color: .black.opacity(0.3), radius: 0, y: 4)
         .environment(\.layoutDirection, .rightToLeft)
         .animation(.snappy, value: points)
