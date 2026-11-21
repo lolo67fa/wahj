@@ -180,7 +180,7 @@ enum JourneyError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notSignedIn: return "سجّلي دخولك أولًا."
+        case .notSignedIn: return "سجّل دخولك أولًا."
         case .invalid: return "رمز الدعوة غير صحيح."
         case .expired: return "انتهت صلاحية هذه الدعوة."
         case .revoked: return "أُلغيت هذه الدعوة."
