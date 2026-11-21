@@ -147,7 +147,7 @@ private struct EmailLoginView: View {
 
                         Text(
                             creatingAccount
-                            ? "ابدئي رحلتك معنا"
+                            ? "ابدأ رحلتك معنا"
                             : "نورت من جديد"
                         )
                         .font(.system(size: 28, weight: .bold))
@@ -205,7 +205,7 @@ private struct EmailLoginView: View {
                                     .padding(.top, 8)
 
                                 SecureField(
-                                    "أعيدي كتابة كلمة المرور",
+                                    "أعد كتابة كلمة المرور",
                                     text: $confirmPassword
                                 )
                                 .textContentType(.newPassword)
@@ -221,7 +221,7 @@ private struct EmailLoginView: View {
                         .disabled(isLoading)
 
                         if !creatingAccount {
-                            Button("نسيتِ كلمة المرور؟") {
+                            Button("نسيت كلمة المرور؟") {
                                 resetPassword()
                             }
                             .foregroundStyle(pink)
@@ -324,7 +324,7 @@ private struct EmailLoginView: View {
             }
 
             guard password.count >= 6 else {
-                displayMessage("اكتبي كلمة مرور من ٦ أحرف على الأقل.")
+                displayMessage("اكتب كلمة مرور من ٦ أحرف على الأقل.")
                 return
             }
         }
@@ -359,7 +359,7 @@ private struct EmailLoginView: View {
 
     private func resetPassword() {
         guard !cleanEmail.isEmpty else {
-            displayMessage("اكتبي بريدك الإلكتروني أولًا.")
+            displayMessage("اكتب بريدك الإلكتروني أولًا.")
             return
         }
 
@@ -374,7 +374,7 @@ private struct EmailLoginView: View {
                 )
 
                 displayMessage(
-                    "إذا كان البريد مرتبطًا بحساب، بتوصلك رسالة لاستعادة كلمة المرور. شيّكي البريد غير المرغوب أيضًا."
+                    "إذا كان البريد مرتبطًا بحساب، بتوصلك رسالة لاستعادة كلمة المرور. شيّك البريد غير المرغوب أيضًا."
                 )
             } catch {
                 AuthErrorDiagnostics.log(error, operation: "sendPasswordReset")
@@ -394,27 +394,27 @@ private struct EmailLoginView: View {
             return "صيغة البريد الإلكتروني غير صحيحة."
 
         case AuthErrorCode.emailAlreadyInUse.rawValue:
-            return "البريد مسجّل من قبل. اختاري تسجيل الدخول."
+            return "البريد مسجّل من قبل. اختر تسجيل الدخول."
 
         case AuthErrorCode.weakPassword.rawValue:
-            return "كلمة المرور ضعيفة. اختاري كلمة أطول وأقوى."
+            return "كلمة المرور ضعيفة. اختر كلمة أطول وأقوى."
 
         case AuthErrorCode.wrongPassword.rawValue,
              AuthErrorCode.userNotFound.rawValue,
              AuthErrorCode.invalidCredential.rawValue:
-            return "تعذّر الدخول. تأكدي من البريد وكلمة المرور."
+            return "تعذّر الدخول. تأكد من البريد وكلمة المرور."
 
         case AuthErrorCode.networkError.rawValue:
-            return "تأكدي من اتصال الإنترنت وحاولي مرة ثانية."
+            return "تأكد من اتصال الإنترنت وحاول مرة ثانية."
 
         case AuthErrorCode.operationNotAllowed.rawValue:
-            return "فعّلي Email/Password من إعدادات Authentication في Firebase."
+            return "فعّل Email/Password من إعدادات Authentication في Firebase."
 
         case AuthErrorCode.tooManyRequests.rawValue:
-            return "المحاولات كثيرة. انتظري قليلًا وحاولي مرة ثانية."
+            return "المحاولات كثيرة. انتظر قليلًا وحاول مرة ثانية."
 
         case AuthErrorCode.userDisabled.rawValue:
-            return "هذا الحساب موقوف. تواصلي مع مسؤول التطبيق."
+            return "هذا الحساب موقوف. تواصل مع مسؤول التطبيق."
 
         default:
             return error.localizedDescription

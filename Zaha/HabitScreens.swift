@@ -193,7 +193,7 @@ struct FriendsScreen: View {
                         Text("لكل عادة رحلتها")
                             .font(.system(size: 17, weight: .bold))
                             .foregroundStyle(FriendsTheme.yellow)
-                        Text("تقدرين تبدئين المذاكرة مع صديق آخر.\nكل رحلة لها عادة وجدول ورصيد مستقل.")
+                        Text("تقدر تبدأ المذاكرة مع صديق آخر.\nكل رحلة لها عادة وجدول ورصيد مستقل.")
                             .font(.system(size: 14))
                             .foregroundStyle(FriendsTheme.subtle)
                             .lineSpacing(3)
@@ -328,7 +328,7 @@ struct StartHabitTogetherScreen: View {
                         .foregroundStyle(AppTheme.text)
                         .lineSpacing(6)
                         .padding(.top, 36)
-                    Text("اختاري عادة واحدة")
+                    Text("اختر عادة واحدة")
                         .font(.system(size: 15))
                         .foregroundStyle(FriendsTheme.subtle)
                         .padding(.top, 32)
@@ -343,7 +343,7 @@ struct StartHabitTogetherScreen: View {
                     Button {
                         isAddingHabit = true
                     } label: {
-                        Text("أضيفي عادة جديدة")
+                        Text("أضف عادة جديدة")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundStyle(AppTheme.text)
                             .frame(maxWidth: .infinity)
