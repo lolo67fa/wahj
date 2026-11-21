@@ -280,6 +280,8 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .background(IntroColors.pink, in: Capsule())
+                    // الظل تحت الزر فقط، مو على النص
+                    .compositingGroup()
                     .shadow(
                         color: AppTheme.accentShadow,
                         radius: 0,

@@ -79,6 +79,8 @@ struct StarSelectionView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 56)
                         .background(pink, in: Capsule())
+                        // الظل تحت الزر فقط، مو على النص
+                        .compositingGroup()
                         .shadow(
                             color: AppTheme.accentShadow,
                             radius: 0,
@@ -216,6 +218,7 @@ struct StarSelectionView: View {
                         lineWidth: 1
                     )
             }
+            .compositingGroup()
             .shadow(color: .black.opacity(0.3), radius: 0, y: 4)
         }
         .buttonStyle(.plain)
