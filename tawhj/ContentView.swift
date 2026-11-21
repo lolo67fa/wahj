@@ -148,15 +148,15 @@ private struct EmailLoginView: View {
                         Text(
                             creatingAccount
                             ? "ابدئي رحلتك معنا"
-                            : "نورتي من جديد"
+                            : "نورت من جديد"
                         )
                         .font(.system(size: 28, weight: .bold))
                         .foregroundStyle(AppTheme.text)
 
                         Text(
                             creatingAccount
-                            ? "أنشئي حسابك بالإيميل وكلمة المرور"
-                            : "سجّلي دخولك بالإيميل وكلمة المرور"
+                            ? "أنشئ حسابك بالإيميل وكلمة المرور"
+                            : "سجّل دخولك بالإيميل وكلمة المرور"
                         )
                         .font(.system(size: 14))
                         .foregroundStyle(pink.opacity(0.85))
@@ -280,8 +280,8 @@ private struct EmailLoginView: View {
                         } label: {
                             Text(
                                 creatingAccount
-                                ? "عندك حساب؟ سجّلي دخولك"
-                                : "ما عندك حساب؟ أنشئي حسابًا"
+                                ? "عندك حساب؟ سجّل دخولك"
+                                : "ما عندك حساب؟ أنشئ حسابًا"
                             )
                             .foregroundStyle(pink)
                         }
