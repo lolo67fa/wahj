@@ -77,7 +77,7 @@ struct ContentView: View {
                 Spacer()
                     .frame(height: 50)
 
-                Text("نجوم")
+                Text("وهج")
                     .font(.system(size: 40, weight: .bold))
                     .foregroundStyle(
                         AppTheme.text
