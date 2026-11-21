@@ -315,10 +315,10 @@ struct MySkyView: View {
         case .complete:
             return "«\(starName)» مكتملة · ١٠٠ نقطة"
         case .inProgress:
-            return "«\(starName)» · \(arabicNumber(store.constellationPoints(i))) / ١٠٠ نقطة — اختاريها من زر المجموعات"
+            return "«\(starName)» · \(arabicNumber(store.constellationPoints(i))) / ١٠٠ نقطة — اخترها من زر المجموعات"
         case .locked:
             let previous = i > 0 ? StarProgress.names[i - 1] : starName
-            return "«\(starName)» مقفلة · تنفتح لما تكملين «\(previous)»"
+            return "«\(starName)» مقفلة · تنفتح لما تكمل «\(previous)»"
         }
     }
 
@@ -360,7 +360,7 @@ struct MySkyView: View {
             HStack {
                 Text(due.isEmpty
                      ? "ما فيه عادات مستحقة اليوم"
-                     : "أنجزتِ \(arabicNumber(done)) من \(arabicNumber(due.count)) عادات اليوم")
+                     : "أنجزت \(arabicNumber(done)) من \(arabicNumber(due.count)) عادات اليوم")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(AppTheme.text)
                 Spacer()
@@ -385,7 +385,7 @@ struct MySkyView: View {
                 selectedTab = 1
                 if showsBackButton { dismiss() }
             } label: {
-                Text("كمّلي عاداتك").bold()
+                Text("كمّل عاداتك").bold()
                     .foregroundStyle(complete ? AppTheme.text : AppTheme.onAccent)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)

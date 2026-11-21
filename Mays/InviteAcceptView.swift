@@ -62,30 +62,30 @@ struct InviteAcceptView: View {
 
         case .lookup(.alreadyMember(let journeyId)):
             message(icon: "person.2.fill",
-                    title: "أنتِ عضوة في هذه الرحلة",
-                    detail: "ما يحتاج تنضمين مرة ثانية.",
-                    action: ("افتحي الرحلة", { onJoined(journeyId) }))
+                    title: "أنت عضو في هذه الرحلة",
+                    detail: "ما يحتاج تنضم مرة ثانية.",
+                    action: ("افتح الرحلة", { onJoined(journeyId) }))
 
         case .lookup(.expired):
             message(icon: "hourglass", title: "انتهت صلاحية الدعوة",
-                    detail: "اطلبي من صديقتك دعوة جديدة.", action: nil)
+                    detail: "اطلب من صديقك دعوة جديدة.", action: nil)
 
         case .lookup(.revoked):
             message(icon: "xmark.circle", title: "أُلغيت هذه الدعوة",
-                    detail: "صاحبة الدعوة ألغتها. اطلبي دعوة جديدة.", action: nil)
+                    detail: "صاحب الدعوة ألغاها. اطلب دعوة جديدة.", action: nil)
 
         case .lookup(.invalid):
             message(icon: "questionmark.circle", title: "الدعوة غير صحيحة",
-                    detail: "تأكدي من الرابط أو رمز الدعوة.", action: nil)
+                    detail: "تأكد من الرابط أو رمز الدعوة.", action: nil)
 
         case .joined(let journeyId):
-            message(icon: "sparkles", title: "انضممتِ للرحلة!",
+            message(icon: "sparkles", title: "انضممت للرحلة!",
                     detail: "العادة صارت ضمن عاداتك، وكل إنجاز يضيء نجمتكم المشتركة.",
-                    action: ("افتحي الرحلة", { onJoined(journeyId) }))
+                    action: ("افتح الرحلة", { onJoined(journeyId) }))
 
         case .failed(let text):
             message(icon: "wifi.exclamationmark", title: "تعذّر فتح الدعوة",
-                    detail: text, action: ("حاولي مرة ثانية", { Task { await load() } }))
+                    detail: text, action: ("حاول مرة ثانية", { Task { await load() } }))
         }
     }
 
@@ -93,7 +93,7 @@ struct InviteAcceptView: View {
         VStack(spacing: 16) {
             AnimatedStar(imageName: "starWink", size: 110)
 
-            Text("\(invite.inviterName) تدعوك لرحلة مشتركة")
+            Text("دعوة من \(invite.inviterName) لرحلة مشتركة")
                 .font(.title2.bold())
                 .foregroundStyle(AppTheme.text)
                 .multilineTextAlignment(.center)
@@ -214,7 +214,7 @@ struct InviteCodeEntryView: View {
                     Text("رمز الدعوة")
                         .font(.title2.bold())
                         .foregroundStyle(AppTheme.text)
-                    Text("الصقي الرمز اللي وصلك في رسالة الدعوة.")
+                    Text("الصق الرمز اللي وصلك في رسالة الدعوة.")
                         .font(.footnote)
                         .foregroundStyle(AppTheme.textSecondary)
 

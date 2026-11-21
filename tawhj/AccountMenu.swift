@@ -80,7 +80,7 @@ struct AccountSection: View {
             Button("تسجيل الخروج", role: .destructive, action: signOut)
             Button("إلغاء", role: .cancel) {}
         } message: {
-            Text("عاداتك ونقاطك تبقى محفوظة، وترجع لما تسجّلين دخولك مرة ثانية.")
+            Text("عاداتك ونقاطك تبقى محفوظة، وترجع لما تسجّل دخولك مرة ثانية.")
         }
         .alert("تعذّر تسجيل الخروج", isPresented: Binding(
             get: { errorMessage != nil },
@@ -98,7 +98,7 @@ struct AccountSection: View {
         } catch {
             // Still signed in: nothing is cleared and the user stays where they are.
             AuthErrorDiagnostics.log(error, operation: "signOut")
-            errorMessage = "ما قدرنا نسجّل خروجك. تأكدي من الاتصال وحاولي مرة ثانية."
+            errorMessage = "ما قدرنا نسجّل خروجك. تأكد من الاتصال وحاول مرة ثانية."
         }
     }
 }

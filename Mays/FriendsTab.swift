@@ -94,7 +94,7 @@ final class InviteItem: NSObject, UIActivityItemSource {
     convenience init(invite: InviteSummary) {
         let star = StarProgress.names[min(max(invite.constellationIndex, 0), StarProgress.names.count - 1)]
         let text = """
-        تعالي نكمل نجمة «\(star)» سوا في وَهج ✨
+        تعال نكمل نجمة «\(star)» سوا في وَهج ✨
         عادتنا: \(invite.habitTitle)
         رمز الدعوة: \(InviteCode.formatted(invite.code))
         """

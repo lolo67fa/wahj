@@ -30,7 +30,7 @@ struct FriendsListView: View {
                     header
                     starCard
 
-                    Text("صديقاتك")
+                    Text("أصدقاؤك")
                         .font(.footnote.bold())
                         .foregroundStyle(AppTheme.textSecondary)
 
@@ -53,7 +53,7 @@ struct FriendsListView: View {
                     Button(action: inviteFriend) {
                         HStack {
                             if isInviting { ProgressView().tint(AppTheme.text) }
-                            Text("+ دعوة صديقة للانضمام").bold()
+                            Text("+ دعوة صديق للانضمام").bold()
                         }
                         .foregroundStyle(AppTheme.text)
                         .frame(maxWidth: .infinity)
@@ -192,12 +192,12 @@ struct FriendsListView: View {
                 .background(AppTheme.background, in: Circle())
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(isMe ? "\(member.displayName) (أنتِ)" : member.displayName)
+                Text(isMe ? "\(member.displayName) (أنت)" : member.displayName)
                     .bold()
                     .foregroundStyle(AppTheme.text)
                 Text(member.active
-                     ? "ساهمت بـ \(arabicNumber(state.contribution(of: member.id))) نقطة"
-                     : "غادرت الرحلة")
+                     ? "مساهمة: \(arabicNumber(state.contribution(of: member.id))) نقطة"
+                     : "غادر الرحلة")
                     .font(.caption)
                     .foregroundStyle(AppTheme.textSecondary)
             }

@@ -238,7 +238,7 @@ final class JourneyService {
 
     private var displayName: String {
         let name = store?.displayName.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return name.isEmpty ? "صديقة" : name
+        return name.isEmpty ? "صديق" : name
     }
 
     // MARK: Listening
@@ -543,7 +543,7 @@ final class JourneyService {
     nonisolated private static func member(from snapshot: QueryDocumentSnapshot) -> JourneyMember {
         JourneyMember(
             id: snapshot.documentID,
-            displayName: snapshot.get("displayName") as? String ?? "صديقة",
+            displayName: snapshot.get("displayName") as? String ?? "صديق",
             role: snapshot.get("role") as? String ?? "member",
             streak: snapshot.get("streak") as? Int ?? 0,
             active: snapshot.get("active") as? Bool ?? true,
@@ -560,7 +560,7 @@ final class JourneyService {
             code: snapshot.documentID,
             journeyId: journeyId,
             inviterUid: inviterUid,
-            inviterName: snapshot.get("inviterName") as? String ?? "صديقة",
+            inviterName: snapshot.get("inviterName") as? String ?? "صديق",
             habitTitle: snapshot.get("habitTitle") as? String ?? "",
             habitIcon: snapshot.get("habitIcon") as? String ?? "star",
             habitDays: snapshot.get("habitDays") as? [Int] ?? Array(0...6),
