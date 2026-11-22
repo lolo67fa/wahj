@@ -13,6 +13,8 @@ struct MySkyView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
+    // مظهر التطبيق الفعلي (فاتح/داكن). السماء تبقى ليلية، والأزرار تتبع هذا المظهر.
+    @Environment(\.colorScheme) private var appColorScheme
 
     // محفوظة لكل حساب (defaultAppStorage = بيانات الحساب).
     @AppStorage("selectedStarIndex") private var selectedStar = 0
@@ -73,6 +75,7 @@ struct MySkyView: View {
                 BottomTabBar(selected: $selectedTab)
                     .padding(.horizontal, 20)
                     .padding(.bottom, 8)
+                    .environment(\.colorScheme, appColorScheme)
             }
         }
         .toolbar(.hidden, for: .navigationBar)
@@ -111,6 +114,7 @@ struct MySkyView: View {
                         .background(AppTheme.surface, in: Circle())
                 }
                 .accessibilityLabel("رجوع")
+                .environment(\.colorScheme, appColorScheme)
             }
             Text("سمائي")
                 .font(.system(size: 24, weight: .bold))
@@ -127,6 +131,7 @@ struct MySkyView: View {
                         .background(AppTheme.surface, in: Circle())
                 }
                 .accessibilityLabel("إعادة توسيط السماء")
+                .environment(\.colorScheme, appColorScheme)
                 .transition(.opacity)
             }
             Button { isChoosingStar = true } label: {
@@ -137,6 +142,7 @@ struct MySkyView: View {
                     .background(AppTheme.surface, in: Circle())
             }
             .accessibilityLabel("اختيار المجموعة")
+            .environment(\.colorScheme, appColorScheme)
         }
         .padding(.top, 8)
     }
@@ -393,8 +399,9 @@ struct MySkyView: View {
             }
         }
         .padding(14)
-        .background(AppTheme.surface.opacity(0.85), in: RoundedRectangle(cornerRadius: 22))
+        .background(AppTheme.surface.opacity(appColorScheme == .light ? 0.95 : 0.85), in: RoundedRectangle(cornerRadius: 22))
         .overlay(RoundedRectangle(cornerRadius: 22).stroke(AppTheme.border, lineWidth: 1))
+        .environment(\.colorScheme, appColorScheme)
     }
 
     // MARK: - Progress reveal
