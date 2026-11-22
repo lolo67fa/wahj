@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/app-icon.png" width="140" alt="Wahj app icon">
+
 # Wahj (وهج)
 
 **Every habit you complete earns a star. Your stars build real constellations.**
