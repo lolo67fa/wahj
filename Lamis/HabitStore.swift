@@ -147,9 +147,6 @@ final class HabitStore {
         log = loadLog()
         canPersist = true
         checkForNewDay()
-        for habit in habits {
-            Task { await ReminderScheduler.schedule(habit) }
-        }
     }
 
     // Adds habits from data saved on this device before accounts were separated.
@@ -167,9 +164,6 @@ final class HabitStore {
         }
         habits.append(contentsOf: new)
         recompute()
-        for habit in new {
-            Task { await ReminderScheduler.schedule(habit) }
-        }
     }
 
     // MARK: - Shared journeys
@@ -254,6 +248,36 @@ final class HabitStore {
         constellations = HabitProgress.constellations(from: log.records, includeDemo: includeDemo)
         appStreak = HabitProgress.appStreak(habits: habits, log: log, today: .now,
                                             calendar: calendar, includeDemo: includeDemo)
+        refreshNotifications()
+    }
+
+    // MARK: - Notifications
+
+    @ObservationIgnored private var notificationTask: Task<Void, Never>?
+
+    // Rebuilds Nujaima's notifications from the current progress (see NujaimaNotifications.swift).
+    // Debounced, so several changes in a row schedule once.
+    func refreshNotifications() {
+        guard canPersist, !includeDemo else { return }
+        notificationTask?.cancel()
+        notificationTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(400))
+            guard let self, !Task.isCancelled, self.canPersist else { return }
+            await NujaimaNotifications.reschedule(NotificationPlanner.plan(self.notificationSnapshot()))
+        }
+    }
+
+    private func notificationSnapshot() -> NotificationPlanner.Snapshot {
+        let index = min(max(defaults.integer(forKey: "selectedStarIndex"), 0), HabitProgress.constellationCount - 1)
+        return NotificationPlanner.Snapshot(
+            habits: habits,
+            isDue: { [unowned self] habit, day in self.isDue(habit, on: day) },
+            isCompletedToday: { [unowned self] habit in self.isCompleted(habit, on: .now) },
+            streak: appStreak,
+            constellationName: StarProgress.names[index],
+            constellationPoints: constellationPoints(index),
+            name: displayName
+        )
     }
 
     // MARK: - Completion log
@@ -284,7 +308,7 @@ final class HabitStore {
 
     func add(_ habit: Habit) {
         habits.append(habit)
-        Task { await ReminderScheduler.schedule(habit) }
+        recompute()   // also refreshes Nujaima's notifications
     }
 
     // Saves edited settings and keeps today's progress consistent with them.
@@ -334,8 +358,6 @@ final class HabitStore {
             justFinished = habits[index]
         }
 
-        let saved = habits[index]
-        Task { await ReminderScheduler.schedule(saved) }
     }
 
     // The star on the left of each card.
@@ -347,7 +369,6 @@ final class HabitStore {
     // Its log entries stay, so points already earned aren't taken away.
     func delete(_ habit: Habit) {
         habits.removeAll { $0.id == habit.id }
-        ReminderScheduler.cancel(habit)
         recompute()
     }
 
@@ -400,20 +421,14 @@ final class HabitStore {
 
         if habits[index].isFinished && !wasFinished {
             justFinished = habits[index]
-            ReminderScheduler.cancel(habits[index])
         }
     }
 
     private func uncompleteToday(at index: Int) {
-        let wasFinished = habits[index].isFinished
         removeCompletion(at: index)
         recompute()
         notifyShared(at: index, done: false)
 
-        if wasFinished && !habits[index].isFinished {
-            let habit = habits[index]
-            Task { await ReminderScheduler.schedule(habit) }
-        }
     }
 
     // MARK: - New day & missed days
@@ -572,48 +587,6 @@ final class ReminderPresenter: NSObject, UNUserNotificationCenterDelegate {
         willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
         [.banner, .sound, .list]
-    }
-}
-
-// Schedules a repeating local notification on each chosen day at the reminder time.
-enum ReminderScheduler {
-    static func schedule(_ habit: Habit) async {
-        cancel(habit)
-        guard habit.reminderEnabled, !habit.isFinished else { return }
-
-        let center = UNUserNotificationCenter.current()
-        let granted = (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
-        guard granted else { return }
-
-        let time = Calendar.current.dateComponents([.hour, .minute], from: habit.reminderTime)
-        for day in habit.days {
-            var components = DateComponents()
-            components.hour = time.hour
-            components.minute = time.minute
-            // Our index 0 = Saturday (weekday 7); 1...6 = Sunday...Friday (weekday 1...6).
-            components.weekday = day == 0 ? 7 : day
-
-            let content = UNMutableNotificationContent()
-            content.title = habit.name
-            content.body = "حان وقت عادتك"
-            content.sound = .default
-
-            let request = UNNotificationRequest(
-                identifier: identifier(for: habit, day: day),
-                content: content,
-                trigger: UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
-            )
-            try? await center.add(request)
-        }
-    }
-
-    static func cancel(_ habit: Habit) {
-        let ids = (0...6).map { identifier(for: habit, day: $0) }
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
-    }
-
-    private static func identifier(for habit: Habit, day: Int) -> String {
-        "\(habit.id.uuidString)-\(day)"
     }
 }
 
