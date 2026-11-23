@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/app-icon.png" width="140" alt="Wahj app icon">
+
 # Wahj (وهج)
 
 **Every habit you complete earns a star. Your stars build real constellations.**
@@ -20,20 +22,32 @@ Miss a day and your star waits for you instead of going out.
 
 <table>
   <tr>
+    <td align="center"><img src="docs/screenshots/welcome.png" width="200"><br><sub><b>Welcome</b><br>Ghala</sub></td>
+    <td align="center"><img src="docs/screenshots/appearance.png" width="200"><br><sub><b>Appearance</b><br>Ghala</sub></td>
+    <td align="center"><img src="docs/screenshots/star-selection.png" width="200"><br><sub><b>Choose Your Star</b><br>Ghaida</sub></td>
+    <td align="center"><img src="docs/screenshots/habit-intro.png" width="200"><br><sub><b>How Stars Work</b><br>Ghaida</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/lujain-home.png" width="200"><br><sub><b>Home</b><br>Lujain</sub></td>
+    <td align="center"><img src="docs/screenshots/lujain-my-sky.png" width="200"><br><sub><b>My Sky</b><br>Lujain</sub></td>
+    <td align="center"><img src="docs/screenshots/lujain-star-complete.png" width="200"><br><sub><b>Star Complete</b><br>Lujain</sub></td>
+    <td align="center"><img src="docs/screenshots/lujain-constellation.png" width="200"><br><sub><b>Constellation</b><br>Lujain</sub></td>
+  </tr>
+  <tr>
     <td align="center"><img src="docs/screenshots/My-Habits.png" width="200"><br><sub><b>My Habits</b><br>Lamis</sub></td>
+    <td align="center"><img src="docs/screenshots/Add-habits.png" width="200"><br><sub><b>Add Habit</b><br>Ghaida & Lamis</sub></td>
     <td align="center"><img src="docs/screenshots/Missed-habit.png" width="200"><br><sub><b>Missed Habit</b><br>Lamis</sub></td>
-    <td align="center"><img src="docs/screenshots/Add-habits.png" width="200"><br><sub><b>Add Habit</b><br>Lamis</sub></td>
     <td align="center"><img src="docs/screenshots/settings.png" width="200"><br><sub><b>Settings</b><br>Lamis</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/screenshots/mays-friends-list.png" width="200"><br><sub><b>Friends</b><br>Mays</sub></td>
+    <td align="center"><img src="docs/screenshots/mays-friends.png" width="200"><br><sub><b>Friends</b><br>Mays</sub></td>
     <td align="center"><img src="docs/screenshots/mays-choose-constellation.png" width="200"><br><sub><b>Choose a Star</b><br>Mays</sub></td>
     <td align="center"><img src="docs/screenshots/zaha-friends.png" width="200"><br><sub><b>Friends Home</b><br>Zaha</sub></td>
     <td align="center"><img src="docs/screenshots/zaha-start-together.png" width="200"><br><sub><b>Start a Habit Together</b><br>Zaha</sub></td>
   </tr>
 </table>
 
-More screens are added as the team finishes them. Screenshots live in `docs/screenshots/`.
+Screenshots live in `docs/screenshots/` (taken in dark mode from each screen's Xcode preview).
 
 ## About
 
@@ -50,13 +64,35 @@ More screens are added as the team finishes them. Screenshots live in `docs/scre
 - Do habits with friends, invite them from the iOS share sheet and see their progress
 - Arabic, right-to-left, light and dark mode
 
+## Tech stack
+
+- **SwiftUI** with the Observation framework (`@Observable`)
+- **Firebase Authentication**: sign in with email and password
+- **Cloud Firestore**: habits shared with friends and invites
+- **Firebase Hosting**: the invite link page (`firebase/public`)
+- **Color Sets** in the asset catalog for light and dark mode
+- **Local notifications** for habit reminders
+
+> **Planned:** Firebase is used for now. After joining the Apple Developer Program, we plan to move to Apple's own services (for example Sign in with Apple and CloudKit).
+
+## Privacy
+
+This describes the current version of the app.
+
+- Your personal habits, points and streaks are saved **on your iPhone**, separately for each account.
+- Your email and password are handled by **Firebase Authentication** only. They are never stored in the app's database.
+- Only habits you **share with friends** go to Firestore: the habit's name, icon and days, the chosen constellation, each member's display name and streak, and the days each member completed.
+- Reminders are local notifications scheduled on the device. Nothing is sent to a server.
+
 ## Getting started
+
+**Requirements:** Xcode 27.2 or later, and an iPhone or simulator with iOS 27.0 or later.
 
 ```bash
 git clone https://github.com/lolo67fa/wahj.git
 ```
 
-Open `Wahj.xcodeproj` in Xcode, pick an iPhone simulator and press **Cmd + R**.
+Open `Wahj.xcodeproj` in Xcode, pick an iPhone simulator and press **Cmd + R**. The first build downloads the Firebase packages, so it can take a few minutes.
 
 ## Project structure
 
@@ -67,13 +103,14 @@ wahj/
 ├── Mays/             Friends screens
 ├── Zaha/             Friends screens
 ├── Shared/           Theme, StarryBackground, BottomTabBar
-├── Wahj/             Ghala: sign in, onboarding, star selection, Add Habit,
-│                     app entry point (WahjApp.swift), Firebase config,
+├── Wahj/             Ghala: sign in (Firebase), welcome, appearance. Ghaida: how
+│                     stars work, star selection, Add Habit.
+│                     Also the app entry point (WahjApp.swift), Firebase config,
 │                     Assets.xcassets (images, tab bar icons and the light/dark
 │                     Theme… colors)
 ├── firebase/         Firestore rules and the invite page (Firebase Hosting)
 ├── docs/screenshots/ README screenshots
-└── Wahj.xcodeproj    Xcode project
+└── Wahj.xcodeproj   Xcode project
 ```
 
 Each person works in their own folder. Files in `Shared/` are used by everyone, so tell the group before changing them.
@@ -96,9 +133,9 @@ Each person works in their own folder. Files in `Shared/` are used by everyone, 
 ## Design
 
 - [Figma design](https://www.figma.com/design/mYQ0TEcEO8A8MxJhZ3nzjY/Wahj?node-id=1-1322&t=43R1Los8qkt5NdsL-1)
-- Miro board: _add the link here_
+- [Miro board](https://miro.com/app/board/uXjVELAB1IY=/?share_link_id=136314216548) (research, concept and task planning)
 
-Colors are Color Sets in `Assets.xcassets` (named `ThemeBg`, `ThemePink` and so on), each with a Light and a Dark version. `Shared/Theme.swift` gives them short names. Use the name (like `Theme.pink`) in code, never a hex code or `.white`, so every screen follows light and dark mode. Light colors come from Figma.
+Colors are Color Sets in `Wahj/Assets.xcassets` (named `ThemeBg`, `ThemePink` and so on), each with a Light and a Dark version. `Shared/Theme.swift` gives them short names. Use the name (like `Theme.pink`) in code, never a hex code or `.white`, so every screen follows light and dark mode. Light colors come from Figma.
 
 | Light | Dark | Name | Used for |
 |:---:|:---:|---|---|
@@ -112,7 +149,7 @@ Colors are Color Sets in `Assets.xcassets` (named `ThemeBg`, `ThemePink` and so 
 | ![FFFFFF](https://img.shields.io/badge/%20%20%20%20%20%20%20-FFFFFF) `#FFFFFF` | ![2F2240](https://img.shields.io/badge/%20%20%20%20%20%20%20-2F2240) `#2F2240` | `Theme.onAccent` | Text on pink buttons |
 | ![F2B544](https://img.shields.io/badge/%20%20%20%20%20%20%20-F2B544) `#F2B544` | ![FFD60A](https://img.shields.io/badge/%20%20%20%20%20%20%20-FFD60A) `#FFD60A` | `Theme.starLit` | Filled star |
 
-`Theme.decorLine` and `Theme.decorDot` are used by `StarryBackground`. The light/dark choice is saved with `@AppStorage("appearance")` and applied in `MyApp.swift`.
+`Theme.decorLine` and `Theme.decorDot` are used by `StarryBackground`. The light/dark choice is saved with `@AppStorage("appearance")` and applied in `Wahj/WahjApp.swift`.
 
 ## Team
 
@@ -125,4 +162,4 @@ Colors are Color Sets in `Assets.xcassets` (named `ThemeBg`, `ThemePink` and so 
 | Mays | Friends: home, choose a habit, choose a constellation, invitation, progress | [@maysAlh](https://github.com/maysAlh) |
 | Zaha | Friends: home, choose a habit, choose a constellation, invitation, progress | [@zaha7](https://github.com/zaha7) |
 
-Final step: connect all screens with `NavigationStack` and run the app on an iPhone.
+All screens are connected in one app: sign in → onboarding → choose a star → add a habit → tabs (Home, My Habits, My Sky, Friends).
