@@ -1,6 +1,6 @@
 //
 //  AccountMenu.swift
-//  tawhj
+//  Wahj
 //
 //  Settings entry on the home page, and the real Firebase sign-out shown in
 //  Settings → الحساب. Signing out only ends the session: the account's

@@ -1,6 +1,6 @@
 //
 //  LegacyHabitMigration.swift
-//  tawhj
+//  Wahj
 //
 //  Before accounts were separated, habits were saved in the app's shared
 //  UserDefaults with no owner:

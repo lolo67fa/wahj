@@ -14,7 +14,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 }
 
 @main
-struct tawhjApp: App {
+struct WahjApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self)
     var delegate
 
