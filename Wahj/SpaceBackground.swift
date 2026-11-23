@@ -1,6 +1,6 @@
 //
 //  SpaceBackground.swift
-//  tawhj
+//  Wahj
 //
 //  Created by ghala alshreef on 05/06/1448 AH.
 //

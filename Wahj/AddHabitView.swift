@@ -1,6 +1,6 @@
 //
 //  AddHabitView.swift
-//  tawhj
+//  Wahj
 //
 //  Created by ghala alshreef on 07/06/1448 AH.
 //

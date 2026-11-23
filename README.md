@@ -92,7 +92,7 @@ This describes the current version of the app.
 git clone https://github.com/lolo67fa/wahj.git
 ```
 
-Open `tawhj.xcodeproj` in Xcode, pick an iPhone simulator and press **Cmd + R**. The first build downloads the Firebase packages, so it can take a few minutes.
+Open `Wahj.xcodeproj` in Xcode, pick an iPhone simulator and press **Cmd + R**. The first build downloads the Firebase packages, so it can take a few minutes.
 
 ## Project structure
 
@@ -103,14 +103,14 @@ wahj/
 ├── Mays/             Friends screens
 ├── Zaha/             Friends screens
 ├── Shared/           Theme, StarryBackground, BottomTabBar
-├── tawhj/            Ghala: sign in (Firebase), welcome, appearance. Ghaida: how
+├── Wahj/             Ghala: sign in (Firebase), welcome, appearance. Ghaida: how
 │                     stars work, star selection, Add Habit.
-│                     Also the app entry point (tawhjApp.swift), Firebase config,
+│                     Also the app entry point (WahjApp.swift), Firebase config,
 │                     Assets.xcassets (images, tab bar icons and the light/dark
 │                     Theme… colors)
 ├── firebase/         Firestore rules and the invite page (Firebase Hosting)
 ├── docs/screenshots/ README screenshots
-└── tawhj.xcodeproj   Xcode project
+└── Wahj.xcodeproj   Xcode project
 ```
 
 Each person works in their own folder. Files in `Shared/` are used by everyone, so tell the group before changing them.
@@ -122,11 +122,11 @@ Each person works in their own folder. Files in `Shared/` are used by everyone, 
 3. Commit with a short message that starts with a verb, like `Add Missed Habit page`.
 4. `git push` at the end of each session.
 
-> **Xcode:** a new file must be added to the Xcode project, not only copied into the folder, or it will not build. There is only one `@main` file (`tawhj/tawhjApp.swift`). The project uses synchronized folders, so new files inside `tawhj/`, `Shared/`, `Lamis/`, `Lujain/`, `Mays/` or `Zaha/` are added to the target automatically.
+> **Xcode:** a new file must be added to the Xcode project, not only copied into the folder, or it will not build. There is only one `@main` file (`Wahj/WahjApp.swift`). The project uses synchronized folders, so new files inside `Wahj/`, `Shared/`, `Lamis/`, `Lujain/`, `Mays/` or `Zaha/` are added to the target automatically.
 
-> **Habits data:** every screen reads and writes habits through the one `HabitStore` (`Lamis/HabitStore.swift`) that `tawhjApp` puts in the environment (`@Environment(HabitStore.self)`). Points, unlocked constellations and streaks are computed from the completion log (`Shared/HabitProgress.swift`).
+> **Habits data:** every screen reads and writes habits through the one `HabitStore` (`Lamis/HabitStore.swift`) that `WahjApp` puts in the environment (`@Environment(HabitStore.self)`). Points, unlocked constellations and streaks are computed from the completion log (`Shared/HabitProgress.swift`).
 
-> **Colors:** use `Theme` or `AppTheme` (both read the `Theme…` Color Sets in `tawhj/Assets.xcassets`). Each Color Set has a light value (Figma light) and a dark value, and the app follows the appearance chosen in onboarding or Settings.
+> **Colors:** use `Theme` or `AppTheme` (both read the `Theme…` Color Sets in `Wahj/Assets.xcassets`). Each Color Set has a light value (Figma light) and a dark value, and the app follows the appearance chosen in onboarding or Settings.
 
 > **Screenshots:** save a PNG in `docs/screenshots/` with a lowercase name and dashes (`my-habits.png`), then add a cell to the table above.
 
@@ -135,7 +135,7 @@ Each person works in their own folder. Files in `Shared/` are used by everyone, 
 - [Figma design](https://www.figma.com/design/mYQ0TEcEO8A8MxJhZ3nzjY/Wahj?node-id=1-1322&t=43R1Los8qkt5NdsL-1)
 - [Miro board](https://miro.com/app/board/uXjVELAB1IY=/?share_link_id=136314216548) (research, concept and task planning)
 
-Colors are Color Sets in `tawhj/Assets.xcassets` (named `ThemeBg`, `ThemePink` and so on), each with a Light and a Dark version. `Shared/Theme.swift` gives them short names. Use the name (like `Theme.pink`) in code, never a hex code or `.white`, so every screen follows light and dark mode. Light colors come from Figma.
+Colors are Color Sets in `Wahj/Assets.xcassets` (named `ThemeBg`, `ThemePink` and so on), each with a Light and a Dark version. `Shared/Theme.swift` gives them short names. Use the name (like `Theme.pink`) in code, never a hex code or `.white`, so every screen follows light and dark mode. Light colors come from Figma.
 
 | Light | Dark | Name | Used for |
 |:---:|:---:|---|---|
@@ -149,7 +149,7 @@ Colors are Color Sets in `tawhj/Assets.xcassets` (named `ThemeBg`, `ThemePink` a
 | ![FFFFFF](https://img.shields.io/badge/%20%20%20%20%20%20%20-FFFFFF) `#FFFFFF` | ![2F2240](https://img.shields.io/badge/%20%20%20%20%20%20%20-2F2240) `#2F2240` | `Theme.onAccent` | Text on pink buttons |
 | ![F2B544](https://img.shields.io/badge/%20%20%20%20%20%20%20-F2B544) `#F2B544` | ![FFD60A](https://img.shields.io/badge/%20%20%20%20%20%20%20-FFD60A) `#FFD60A` | `Theme.starLit` | Filled star |
 
-`Theme.decorLine` and `Theme.decorDot` are used by `StarryBackground`. The light/dark choice is saved with `@AppStorage("appearance")` and applied in `tawhj/tawhjApp.swift`.
+`Theme.decorLine` and `Theme.decorDot` are used by `StarryBackground`. The light/dark choice is saved with `@AppStorage("appearance")` and applied in `Wahj/WahjApp.swift`.
 
 ## Team
 

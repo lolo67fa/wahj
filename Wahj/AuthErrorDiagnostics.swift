@@ -1,6 +1,6 @@
 //
 //  AuthErrorDiagnostics.swift
-//  tawhj
+//  Wahj
 //
 //  Logs the full details of a Firebase Auth error (domain, code, the
 //  underlying error and the server's reply) so problems like

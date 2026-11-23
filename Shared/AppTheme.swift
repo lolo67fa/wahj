@@ -3,7 +3,7 @@
 //  Shared
 //
 //  The one color palette for every screen in Wahj, in light and dark.
-//  Each color is a Color Set in tawhj/Assets.xcassets (Theme…) with an Any
+//  Each color is a Color Set in Wahj/Assets.xcassets (Theme…) with an Any
 //  (light) and a Dark value, so SwiftUI picks the right one for the
 //  appearance chosen in onboarding or Settings.
 //    Dark  = the unified palette (#33203F background, #4B2F5C cards, #F2B3E6 pink…)
