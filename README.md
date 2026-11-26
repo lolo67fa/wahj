@@ -2,7 +2,7 @@
 
 <img src="docs/app-icon.png" width="140" alt="Wahj app icon">
 
-# Wahj (وهج)
+# Wahaj (وهج)
 
 **Every habit you complete earns a star. Your stars build real constellations.**
 
@@ -153,13 +153,13 @@ Colors are Color Sets in `Wahj/Assets.xcassets` (named `ThemeBg`, `ThemePink` an
 
 ## Team
 
-| Member | Screens | GitHub |
+| Member | Screens | Socials |
 |---|---|---|
-| Ghala | Sign in, appearance, name, welcome, first-time experience | [@lolo67fa](https://github.com/lolo67fa) |
-| Ghaida | Daily habits flow: create a habit, set a duration, mark as done | [@Ghhaidaa](https://github.com/Ghhaidaa) |
-| Lujain | Home, first star, completed constellation, Stars design artist| [@lujainayman1602-ux](https://github.com/lujainayman1602-ux) |
-| Lamis | My Habits, Missed Habit, Add Habit, Settings | [@xtvkyx](https://github.com/xtvkyx) |
-| Mays | Friends: home, choose a habit, choose a constellation, invitation, progress | [@maysAlh](https://github.com/maysAlh) |
-| Zaha | Friends: home, choose a habit, choose a constellation, invitation, progress | [@zaha7](https://github.com/zaha7) |
+| Ghala | Sign in, appearance, name, welcome, first-time experience | [GitHub](https://github.com/lolo67fa) · [LinkedIn](https://www.linkedin.com/in/ghala-a-670a62380/) |
+| Ghaida | Daily habits flow: create a habit, set a duration, mark as done | [GitHub](https://github.com/Ghhaidaa) · [LinkedIn](https://www.linkedin.com/in/ghaida-bin-maadi-92674231a/) |
+| Lujain | Home, first star, completed constellation, Stars design artist | [GitHub](https://github.com/lujainayman1602-ux) · [LinkedIn](https://www.linkedin.com/in/lujain-ayman-9269b223a/) |
+| Lamis | My Habits, Missed Habit, Add Habit, Settings | [GitHub](https://github.com/xtvkyx) · [LinkedIn](https://www.linkedin.com/in/lamis-aljabli/) |
+| Mays | Friends: home, choose a habit, choose a constellation, invitation, progress | [GitHub](https://github.com/maysAlh) · [LinkedIn](https://www.linkedin.com/in/mays-alhammad-300954326/) |
+| Zaha | Friends: home, choose a habit, choose a constellation, invitation, progress | [GitHub](https://github.com/zaha7) · [LinkedIn](https://www.linkedin.com/in/zaha-a-257635215/) |
 
 All screens are connected in one app: sign in → onboarding → choose a star → add a habit → tabs (Home, My Habits, My Sky, Friends).
